@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:garage/initials/intro.dart';
+
+import 'initials/landing-page.dart';
 
 void main() {
   runApp(MyApp());
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
 
         // visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: Intro(),
+      home: Landing(),
     );
   }
 }

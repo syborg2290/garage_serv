@@ -33,14 +33,17 @@ flutter:
 
  
   assets:
-    - assets/designs/intro.png
+
     - assets/designs/avatar.png
     - assets/designs/avatar-up2.png
+    - assets/designs/login-intro.png
 
 
     - assets/Icons/normal.png
     - assets/Icons/service.png
     - assets/Icons/left-arrow.png
+    - assets/Icons/user.png
+    - assets/Icons/computer.png
     
 
   
