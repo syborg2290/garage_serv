@@ -14,7 +14,7 @@ class _IntroState extends State<Intro> {
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
-    // var orientation = MediaQuery.of(context).orientation;
+    var orientation = MediaQuery.of(context).orientation;
 
     SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(statusBarColor: Colors.transparent));
@@ -37,79 +37,84 @@ class _IntroState extends State<Intro> {
       ),
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.white,
-      body: Container(
-        color: Colors.white,
-        width: width,
-        height: height,
-        child: Column(
-          children: <Widget>[
-            // FadeAnimation(0.8, Image.asset("assets/designs/avatar-up2.png")),
-            // Padding(
-            //   padding: EdgeInsets.only(
-            //     top: height * 0.01,
-            //     right: width * 0.01,
-            //     left: width * 0.5,
-            //   )
-            // ),
-            Padding(
-              padding: EdgeInsets.only(
-                top: height * 0.009,
-                right: width * 0.01,
-              ),
-              child: Center(
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Login()));
-                  },
-                  child: FadeAnimation(
-                    0.8,
-                    Padding(
-                      padding: EdgeInsets.only(
-                        top: height * 0.1,
-                      ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(25),
-                            color: Colors.black,
-                            gradient: LinearGradient(
-                                begin: Alignment.topRight,
-                                end: Alignment.bottomLeft,
-                                colors: [
-                                  Palette.appColor,
-                                  Palette.appColor,
-                                  // Colors.black,
-                                ])),
-                        width: width * 0.8,
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                            top: height * 0.02,
-                            bottom: height * 0.02,
-                            // right: width * 0.4,
-                          ),
-                          child: Center(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Image.asset(
-                                  "assets/Icons/normal.png",
-                                  width: width * 0.2,
-                                  height: height * 0.2,
-                                  color: Colors.white,
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: Text(
-                                    'Vehicle',
-                                    style: TextStyle(
-                                      color: Color(0xffFFFFFF),
-                                      fontSize: 28,
-                                      fontFamily: 'Schyler',
-                                      fontWeight: FontWeight.bold,
+      body: SingleChildScrollView(
+        child: Container(
+          color: Colors.white,
+          child: Column(
+            children: <Widget>[
+              // FadeAnimation(0.8, Image.asset("assets/designs/avatar-up2.png")),
+              // Padding(
+              //   padding: EdgeInsets.only(
+              //     top: height * 0.01,
+              //     right: width * 0.01,
+              //     left: width * 0.5,
+              //   )
+              // ),
+              Padding(
+                padding: EdgeInsets.only(
+                  top: height * 0.009,
+                  right: width * 0.01,
+                ),
+                child: Center(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => Login()));
+                    },
+                    child: FadeAnimation(
+                      0.8,
+                      Padding(
+                        padding: EdgeInsets.only(
+                          top: height * 0.1,
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(25),
+                              color: Colors.black,
+                              gradient: LinearGradient(
+                                  begin: Alignment.topRight,
+                                  end: Alignment.bottomLeft,
+                                  colors: [
+                                    Palette.appColor,
+                                    Palette.appColor,
+                                    // Colors.black,
+                                  ])),
+                          width: Orientation.portrait == orientation
+                              ? width * 0.8
+                              : width * 0.4,
+                          height: Orientation.portrait == orientation
+                              ? height * 0.22
+                              : height * 0.4,
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                              top: height * 0.02,
+                              bottom: height * 0.02,
+                              // right: width * 0.4,
+                            ),
+                            child: Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Image.asset(
+                                    "assets/Icons/normal.png",
+                                    width: width * 0.2,
+                                    height: height * 0.2,
+                                    color: Colors.white,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Text(
+                                      'Normal',
+                                      style: TextStyle(
+                                        color: Color(0xffFFFFFF),
+                                        fontSize: 28,
+                                        fontFamily: 'Schyler',
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -118,64 +123,72 @@ class _IntroState extends State<Intro> {
                   ),
                 ),
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(
-                top: height * 0.02,
-                right: width * 0.01,
-              ),
-              child: Center(
-                child: FadeAnimation(
-                  0.8,
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25),
-                      color: Palette.appColorservice,
-                    ),
-                    width: width * 0.8,
-                    // color: Colors.black,
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        top: height * 0.002,
-                        bottom: height * 0.01,
+
+              Padding(
+                padding: EdgeInsets.only(
+                  top: height * 0.02,
+                  right: width * 0.01,
+                ),
+                child: Center(
+                  child: FadeAnimation(
+                    0.8,
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(25),
+                        color: Palette.appColorservice,
                       ),
-                      child: Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Image.asset(
-                              "assets/Icons/service.png",
-                              width: width * 0.2,
-                              height: height * 0.2,
-                              color: Colors.white,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Text(
-                                'Service',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'Schyler'),
+                      width: Orientation.portrait == orientation
+                          ? width * 0.8
+                          : width * 0.4,
+                      height: Orientation.portrait == orientation
+                          ? height * 0.22
+                          : height * 0.4,
+                      // color: Colors.black,
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          top: height * 0.002,
+                          bottom: height * 0.01,
+                        ),
+                        child: Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Image.asset(
+                                "assets/Icons/service.png",
+                                width: width * 0.2,
+                                height: height * 0.2,
+                                color: Colors.white,
                               ),
-                            ),
-                          ],
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Text(
+                                  'Service',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'Schyler'),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(
-                top: height * 0.08,
-              ),
-              child:
-                  FadeAnimation(0.8, Image.asset("assets/designs/avatar.png")),
-            ),
-          ],
+              Orientation.portrait == orientation
+                  ? Padding(
+                      padding: EdgeInsets.only(
+                        top: height * 0.08,
+                      ),
+                      child: FadeAnimation(
+                          0.8, Image.asset("assets/designs/avatar.png")),
+                    )
+                  : SizedBox.shrink(),
+            ],
+          ),
         ),
       ),
     );
