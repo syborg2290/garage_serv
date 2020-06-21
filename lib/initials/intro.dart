@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:garage/animation/fadeAnimation.dart';
 import 'package:garage/initials/login.dart';
+import 'package:garage/initials/main_category.dart';
 import 'package:garage/utils/palette.dart';
 
 class Intro extends StatefulWidget {
@@ -132,45 +133,53 @@ class _IntroState extends State<Intro> {
                 child: Center(
                   child: FadeAnimation(
                     0.8,
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(25),
-                        color: Palette.appColorservice,
-                      ),
-                      width: Orientation.portrait == orientation
-                          ? width * 0.8
-                          : width * 0.4,
-                      height: Orientation.portrait == orientation
-                          ? height * 0.22
-                          : height * 0.4,
-                      // color: Colors.black,
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                          top: height * 0.002,
-                          bottom: height * 0.01,
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => MainCategory()));
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(25),
+                          color: Palette.appColorservice,
                         ),
-                        child: Center(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Image.asset(
-                                "assets/Icons/service.png",
-                                width: width * 0.2,
-                                height: height * 0.2,
-                                color: Colors.white,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Text(
-                                  'Service',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'Schyler'),
+                        width: Orientation.portrait == orientation
+                            ? width * 0.8
+                            : width * 0.4,
+                        height: Orientation.portrait == orientation
+                            ? height * 0.22
+                            : height * 0.4,
+                        // color: Colors.black,
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            top: height * 0.002,
+                            bottom: height * 0.01,
+                          ),
+                          child: Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Image.asset(
+                                  "assets/Icons/service.png",
+                                  width: width * 0.2,
+                                  height: height * 0.2,
+                                  color: Colors.white,
                                 ),
-                              ),
-                            ],
+                                Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Text(
+                                    'Service',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'Schyler'),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
