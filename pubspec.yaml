@@ -1,9 +1,7 @@
 name: garage
 description: A new Flutter project.
 
-# The following line prevents the package from being accidentally published to
-# pub.dev using `pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: 'none'
 
 
 version: 1.0.0+1
@@ -15,11 +13,13 @@ dependencies:
   flutter:
     sdk: flutter
 
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.3
   simple_animations: ^2.2.1
+  cloud_firestore: ^0.13.7
+  firebase_core: ^0.4.5
+  firebase_storage: ^3.1.6
+  firebase_auth: ^0.16.1
+  grafpix: ^1.2.8
 
 dev_dependencies:
   flutter_launcher_icons: ^0.7.5
@@ -34,8 +34,6 @@ flutter_icons:
 
 
 flutter:
-
-
   uses-material-design: true
 
  
@@ -52,6 +50,19 @@ flutter:
     - assets/Icons/left-arrow.png
     - assets/Icons/user.png
     - assets/Icons/computer.png
+    - assets/Icons/emergency.png
+    - assets/Icons/garage.png
+    - assets/Icons/modification.png
+    - assets/Icons/parking.png
+    - assets/Icons/service_center.png
+    - assets/Icons/tyre.png
+    - assets/Icons/solo.png
+    - assets/Icons/rent.png
+    - assets/Icons/hire.png
+    - assets/Icons/spare_parts.png
+    
+    
+    - assets/json/main_category.json
     
 
   
@@ -62,11 +73,5 @@ flutter:
         # - asset: assets/fonts/SourceCodePro-Light.ttf
           style: italic
 
-          
-    # - family: Trajan Pro
-    #   fonts:
-    #     - asset: fonts/TrajanPro.ttf
-    #     - asset: fonts/TrajanPro_Bold.ttf
-    #       weight: 700
   
   

@@ -4,12 +4,12 @@
      <item android:drawable="@color/orange" />
     
      <item
- android:width="200dp"
-        android:height="200dp"
+ android:width="70dp"
+        android:height="70dp"
          android:gravity="center"
         >
     <bitmap
-       android:gravity="fill"
+       
         android:src="@mipmap/splash_icon"
         android:mipMap="true"
         />
