@@ -97,12 +97,15 @@ class _IntroState extends State<Intro> {
                                 children: <Widget>[
                                   Image.asset(
                                     "assets/Icons/normal.png",
-                                    width: width * 0.2,
+                                    width: width * 0.15,
                                     height: height * 0.2,
                                     color: Colors.white,
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.all(16.0),
+                                    padding: EdgeInsets.all(
+                                        orientation == Orientation.portrait
+                                            ? 16.0
+                                            : 0.0),
                                     child: Text(
                                       'Normal',
                                       style: TextStyle(
@@ -155,12 +158,15 @@ class _IntroState extends State<Intro> {
                             children: <Widget>[
                               Image.asset(
                                 "assets/Icons/service.png",
-                                width: width * 0.2,
+                                width: width * 0.15,
                                 height: height * 0.2,
                                 color: Colors.white,
                               ),
                               Padding(
-                                padding: const EdgeInsets.all(16.0),
+                                padding: EdgeInsets.all(
+                                    orientation == Orientation.portrait
+                                        ? 16.0
+                                        : 0.0),
                                 child: Text(
                                   'Service',
                                   style: TextStyle(
