@@ -37,6 +37,7 @@ flutter:
     - assets/designs/avatar.png
     - assets/designs/avatar-up2.png
     - assets/designs/login-intro.png
+    - assets/designs/login-intro-landscape.png
 
 
     - assets/Icons/normal.png
