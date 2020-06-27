@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:garage/animation/fadeAnimation.dart';
 import 'package:garage/initials/login.dart';
-import 'package:garage/initials/main_category.dart';
+import 'package:garage/initials/signup.dart';
 import 'package:garage/utils/palette.dart';
 
 class Intro extends StatefulWidget {
@@ -26,15 +26,6 @@ class _IntroState extends State<Intro> {
         brightness: Brightness.light,
         backgroundColor: Colors.transparent,
         elevation: 0.0,
-        leading: IconButton(
-            icon: Image.asset(
-              'assets/Icons/left-arrow.png',
-              width: width * 0.07,
-              height: height * 0.07,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            }),
       ),
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.white,
@@ -108,7 +99,7 @@ class _IntroState extends State<Intro> {
                                             ? 16.0
                                             : 0.0),
                                     child: Text(
-                                      'Normal',
+                                      "I'm here",
                                       style: TextStyle(
                                         color: Color(0xffFFFFFF),
                                         fontSize: 28,
@@ -138,10 +129,8 @@ class _IntroState extends State<Intro> {
                     0.8,
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => MainCategory()));
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => Signup()));
                       },
                       child: Container(
                         decoration: BoxDecoration(
@@ -173,7 +162,7 @@ class _IntroState extends State<Intro> {
                                 Padding(
                                   padding: const EdgeInsets.all(16.0),
                                   child: Text(
-                                    'Service',
+                                    "I'm new guy",
                                     style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 28,

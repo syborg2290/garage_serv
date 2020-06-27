@@ -20,6 +20,43 @@ dependencies:
   firebase_storage: ^3.1.6
   firebase_auth: ^0.16.1
   grafpix: ^1.2.8
+  flushbar: ^1.10.4
+  progress_dialog: ^1.2.4
+  shared_preferences: ^0.5.7+3
+  firebase_messaging: ^6.0.16
+  flutter_local_notifications: ^1.4.4+1
+  animator: ^1.0.0+5
+  awesome_dialog: ^1.1.2
+  font_awesome_flutter: ^8.8.1
+  photo_manager: ^0.4.8
+  photo:
+    path: ./lib/modified_lib/photo-0.4.8
+  image_picker: ^0.6.7+1
+  content_placeholder: ^0.1.0
+  path_provider: ^1.6.10
+  progressive_image: ^1.0.1
+  image_cropper: ^1.2.3
+  intl_phone_field: ^1.2.0
+  geolocator: ^5.3.2+2
+  permission_handler: ^5.0.0+hotfix.5
+  flutter_datetime_picker:
+    path: ./lib/modified_lib/flutter_datetime_picker-1.3.8
+  google_maps_flutter: ^0.5.28+1
+  google_maps_webservice: ^0.0.17
+  location: ^3.0.2
+  currency_pickers: ^1.0.6
+  datetime_picker_formfield: ^1.0.0
+  flutter_ffmpeg: ^0.2.10
+  flutter_xlider: ^3.4.0
+  scroll_snap_list: ^0.4.1
+  video_player: ^0.10.11+1
+  photo_view: ^0.9.2
+  empty_widget: ^0.0.1
+  uuid: ^2.1.0
+  chewie:
+    path: ./lib/modified_lib/chewie-0.9.10
+  flutter_google_places:
+    path: ./lib/modified_lib/google_places
 
 dev_dependencies:
   flutter_launcher_icons: ^0.7.5
@@ -43,6 +80,8 @@ flutter:
     - assets/designs/avatar-up2.png
     - assets/designs/login-intro.png
     - assets/designs/login-intro-landscape.png
+    - assets/designs/profile_cover.png
+    - assets/designs/empty.png
 
 
     - assets/Icons/normal.png
@@ -60,18 +99,76 @@ flutter:
     - assets/Icons/rent.png
     - assets/Icons/hire.png
     - assets/Icons/spare_parts.png
-    
+    - assets/Icons/electric.png
+    - assets/Icons/hybrid.png
+    - assets/Icons/any.png
+    - assets/Icons/none.png
+    - assets/Icons/rickshaw.png
+    - assets/Icons/van.png
+    - assets/Icons/bus.png
+    - assets/Icons/motorcycle.png
+    - assets/Icons/excavator.png
+    - assets/Icons/heavytruck.png
+    - assets/Icons/lorry.png
+    - assets/Icons/new.png
+    - assets/Icons/use.png
+    - assets/Icons/safety_modify.png
+    - assets/Icons/car_audio_modify.png
+    - assets/Icons/interio_modify.png
+    - assets/Icons/car_electronic_modify.png
+    - assets/Icons/racing_modify.png
+    - assets/Icons/lights_modify.png
+    - assets/Icons/paint_modify.png
+    - assets/Icons/exterio_modify.png
+    - assets/Icons/offroad_modify.png
+    - assets/Icons/car_stickers.png
+    - assets/Icons/otr.png
+    - assets/Icons/tractor.png
+    - assets/Icons/pickup.png
+    - assets/Icons/air-conditioning.png
+    - assets/Icons/add.png
+    - assets/Icons/main-page.png
+    - assets/Icons/notification.png
+    - assets/Icons/person.png
+    - assets/Icons/search.png
+    - assets/Icons/edit.png
+    - assets/Icons/more.png
+    - assets/Icons/camera.png
+    - assets/Icons/video.png
+    - assets/Icons/gallery.png
+    - assets/Icons/album.png
+    - assets/Icons/racing_car.png
+    - assets/Icons/logout.png
+    - assets/Icons/close.png
+    - assets/Icons/redo.png
+    - assets/Icons/chat.png
+    - assets/Icons/places.png
+    - assets/Icons/price.png
+    - assets/Icons/play.png
+    - assets/Icons/pause.png
+    - assets/Icons/cut.png
+    - assets/Icons/hand.png
     
     - assets/json/main_category.json
+    - assets/json/garage_vehicles.json
+    - assets/json/vehicle_modify.json
+    - assets/json/tire_services.json
+    - assets/json/parking_vehicles.json
+    - assets/json/garage_repairs.json
+    - assets/json/dark.json
+    - assets/json/light.json
+    
+    - assets/markers/garage.png
+    - assets/markers/garage2.png
     
 
   
   fonts:
     - family: Schyler
       fonts:
-        - asset: assets/fonts/SPro-Black.ttf
-        # - asset: assets/fonts/SourceCodePro-Light.ttf
-          style: italic
+        # - asset: assets/fonts/SPro-Black.ttf
+        - asset: assets/fonts/SourceCodePro-Light.ttf
+          #style: italic
 
   
   

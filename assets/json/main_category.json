@@ -1,10 +1,10 @@
 [
     {
-        "category_name": "Garage",
+        "category_name": "Garages",
         "image_path": "assets/Icons/garage.png"
     },
     {
-        "category_name": "Parking",
+        "category_name": "Parkings",
         "image_path": "assets/Icons/parking.png"
     },
     {
@@ -12,31 +12,27 @@
         "image_path": "assets/Icons/service_center.png"
     },
     {
-        "category_name": "Spare parts",
+        "category_name": "Spare parts/accessories",
         "image_path": "assets/Icons/spare_parts.png"
     },
     {
-        "category_name": "Emergency vehicle",
+        "category_name": "Emergency vehicles",
         "image_path": "assets/Icons/emergency.png"
     },
     {
-        "category_name": "Vehicle Modification",
+        "category_name": "Vehicle Modifications",
         "image_path": "assets/Icons/modification.png"
     },
     {
-        "category_name": "Tyre shops",
+        "category_name": "Tire services & shops",
         "image_path": "assets/Icons/tyre.png"
     },
     {
-        "category_name": "Solo engineers",
-        "image_path": "assets/Icons/solo.png"
-    },
-    {
-        "category_name": "Hire vericles",
+        "category_name": "Hiring vehicles",
         "image_path": "assets/Icons/hire.png"
     },
     {
-        "category_name": "Rent vericles",
+        "category_name": "Renting vehicles",
         "image_path": "assets/Icons/rent.png"
     }
 ]

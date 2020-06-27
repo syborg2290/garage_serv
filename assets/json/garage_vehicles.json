@@ -1,0 +1,30 @@
+[
+    {
+        "vehicle": "Cars/Vans",
+        "image_path": "assets/Icons/van.png"
+    },
+    {
+        "vehicle": "Motorbikes & Scooters",
+        "image_path": "assets/Icons/motorcycle.png"
+    },
+    {
+        "vehicle": "Buses",
+        "image_path": "assets/Icons/bus.png"
+    },
+    {
+        "vehicle": "Lorries",
+        "image_path": "assets/Icons/lorry.png"
+    },
+    {
+        "vehicle": "Three Wheelers",
+        "image_path": "assets/Icons/rickshaw.png"
+    },
+    {
+        "vehicle": "Heavy trucks",
+        "image_path": "assets/Icons/heavytruck.png"
+    },
+    {
+        "vehicle": "Heavy Machinery and Tractors",
+        "image_path": "assets/Icons/excavator.png"
+    }
+]

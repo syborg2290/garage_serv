@@ -1,0 +1,30 @@
+[
+    {
+        "type": "Passenger",
+        "image_path": "assets/Icons/van.png"
+    },
+    {
+        "type": "Two Wheelers",
+        "image_path": "assets/Icons/motorcycle.png"
+    },
+    {
+        "type": "OTR",
+        "image_path": "assets/Icons/otr.png"
+    },
+    {
+        "type": "Trucks",
+        "image_path": "assets/Icons/lorry.png"
+    },
+    {
+        "type": "Farm Services",
+        "image_path": "assets/Icons/tractor.png"
+    },
+    {
+        "type": "Pick up",
+        "image_path": "assets/Icons/pickup.png"
+    },
+    {
+        "type": "3 wheelers",
+        "image_path": "assets/Icons/rickshaw.png"
+    }
+]

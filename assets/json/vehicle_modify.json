@@ -1,0 +1,46 @@
+[
+    {
+        "modify": "Interior modify",
+        "image_path": "assets/Icons/interio_modify.png"
+    },
+    {
+        "modify": "Exterior modify",
+        "image_path": "assets/Icons/exterio_modify.png"
+    },
+    {
+        "modify": "Electronic modify",
+        "image_path": "assets/Icons/car_electronic_modify.png"
+    },
+    {
+        "modify": "Audio & Video modify",
+        "image_path": "assets/Icons/car_audio_modify.png"
+    },
+    {
+        "modify": "Safety & Security modify",
+        "image_path": "assets/Icons/safety_modify.png"
+    },
+    {
+        "modify": "Lights modify",
+        "image_path": "assets/Icons/lights_modify.png"
+    },
+    {
+        "modify": "Aircondtion modify",
+        "image_path": "assets/Icons/air-conditioning.png"
+    },
+    {
+        "modify": "Paint & Tinker modify",
+        "image_path": "assets/Icons/paint_modify.png"
+    },
+    {
+        "modify": "Stickers modify",
+        "image_path": "assets/Icons/car_stickers.png"
+    },
+    {
+        "modify": "OffRoad modify",
+        "image_path": "assets/Icons/offroad_modify.png"
+    },
+    {
+        "modify": "Racing modify",
+        "image_path": "assets/Icons/racing_modify.png"
+    }
+]
