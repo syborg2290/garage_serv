@@ -12,7 +12,7 @@ import 'package:location/location.dart' as lo;
 import 'dart:ui' as ui;
 
 class Location extends StatefulWidget {
-  List<double> locationCoord;
+  final List<double> locationCoord;
   Location({this.locationCoord, Key key}) : super(key: key);
 
   @override
@@ -127,7 +127,7 @@ class _LocationState extends State<Location> {
     var location = await _locationTracker.getLocation();
     changeMapMode();
     final Uint8List markerIcon =
-        await getBytesFromAsset('assets/markers/garage2.png', 200);
+        await getBytesFromAsset('assets/markers/garaMarker_blue.png', 200);
     _markers.add(
       Marker(
         markerId: MarkerId("garage1"),
@@ -149,54 +149,6 @@ class _LocationState extends State<Location> {
     );
     setState(() {});
   }
-
-  // updateLocation() async {
-  //   changeMapMode();
-  //   final Uint8List markerIcon =
-  //       await getBytesFromAsset('assets/markers/garage2.png', 200);
-
-  //   try {
-  //     var location = await _locationTracker.getLocation();
-
-  //     if (_locationSubscription != null) {
-  //       _locationSubscription.cancel();
-  //     }
-
-  //     _locationSubscription =
-  //         _locationTracker.onLocationChanged.listen((newLocalData) async {
-  //       if (_controller != null) {
-  //         if (!mounted) {
-  //           return;
-  //         }
-
-  //         _markers.add(
-  //           Marker(
-  //             markerId: MarkerId("garage1"),
-  //             position: LatLng(newLocalData.latitude, newLocalData.longitude),
-  //             // rotation: newLocalData.heading,
-  //             icon: BitmapDescriptor.fromBytes(markerIcon),
-  //             flat: true,
-  //             anchor: Offset(1.0, 1.0),
-  //             zIndex: 2,
-  //             draggable: true,
-  //             onDragEnd: (value) {
-  //               setState(() {
-  //                 latitude = value.latitude;
-  //                 longitude = value.longitude;
-  //                 _lastMapPosition = LatLng(value.latitude, value.longitude);
-  //               });
-  //             },
-  //           ),
-  //         );
-  //         setState(() {});
-  //       }
-  //     });
-  //   } on PlatformException catch (e) {
-  //     if (e.code == "PERMISSION_DENIED") {
-  //       debugPrint("permission denied");
-  //     }
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -288,23 +240,29 @@ class _LocationState extends State<Location> {
                   zoomGesturesEnabled: true,
                   mapToolbarEnabled: false,
                 ),
-                Container(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Align(
-                      alignment: Alignment.topRight,
-                      child: Column(
-                        children: <Widget>[
-                          SizedBox(
-                            height: 15.0,
-                          ),
-                          FloatingActionButton(
-                            backgroundColor: Palette.appColor,
-                            onPressed: _onMapTypeButtonPressed,
-                            child: Icon(Icons.map),
-                            heroTag: "btns1",
-                          ),
-                        ],
+                Padding(
+                  padding: EdgeInsets.only(top: height * 0.1),
+                  child: Container(
+                    child: Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Align(
+                        alignment: Alignment.topRight,
+                        child: Column(
+                          children: <Widget>[
+                            SizedBox(
+                              height: 15.0,
+                            ),
+                            FloatingActionButton(
+                              backgroundColor: Palette.appColor,
+                              onPressed: _onMapTypeButtonPressed,
+                              child: Icon(
+                                Icons.map,
+                                color: Colors.black,
+                              ),
+                              heroTag: "btnMapType",
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),

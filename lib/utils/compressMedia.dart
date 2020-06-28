@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:math';
+import 'package:flutter_video_compress/flutter_video_compress.dart';
 import 'package:image/image.dart' as Im;
 import 'package:path_provider/path_provider.dart';
 
@@ -31,4 +32,28 @@ Future<File> getThumbnailForImage(File image, int size) async {
     ..writeAsBytesSync(Im.encodeJpg(mediaFile, quality: size));
 
   return compressMediaFile;
+}
+
+Future<File> compressVideoFile(File file) async {
+  final _flutterVideoCompress = FlutterVideoCompress();
+  final info = await _flutterVideoCompress.compressVideo(
+    file.path,
+
+    quality:
+        VideoQuality.HighestQuality, // default(VideoQuality.DefaultQuality)
+    deleteOrigin: false, // default(false)
+  );
+
+  return info.file;
+}
+
+Future<File> getThumbnailForVideo(File file) async {
+  final _flutterVideoCompress = FlutterVideoCompress();
+  final thumbnailFile =
+      await _flutterVideoCompress.getThumbnailWithFile(file.path,
+          quality: 100, // default(100)
+          position: -1 // default(-1)
+          );
+
+  return thumbnailFile;
 }

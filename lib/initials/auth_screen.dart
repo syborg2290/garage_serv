@@ -9,6 +9,7 @@ import 'package:garage/main/main_pages/activity_feed.dart';
 import 'package:garage/main/main_pages/find.dart';
 import 'package:garage/main/main_pages/profile.dart';
 import 'package:garage/main/main_pages/timeline.dart';
+import 'package:garage/models/user.dart';
 import 'package:garage/services/database/userStuff.dart';
 import 'package:garage/utils/palette.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,6 +25,7 @@ class _AuthScreenState extends State<AuthScreen> {
   PageController pageController;
   int pageIndex = 0;
   String currentUserId;
+  User currentUser;
   Color bottomActionBar = Palette.appColor;
   Brightness bottomBrightness = Brightness.light;
   FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
@@ -59,7 +61,10 @@ class _AuthScreenState extends State<AuthScreen> {
   getCurrentUser() async {
     final SharedPreferences pref = await SharedPreferences.getInstance();
     await configureFirebaseMessaging(pref.getString('userid'));
+    User currentUserObj =
+        User.fromDocument(await getUserObj(pref.getString('userid')));
     setState(() {
+      currentUser = currentUserObj;
       currentUserId = pref.getString('userid');
     });
   }
@@ -153,9 +158,15 @@ class _AuthScreenState extends State<AuthScreen> {
           child: PageView(
             allowImplicitScrolling: true,
             children: <Widget>[
-              Timeline(),
-              ActivityFeed(),
-              Find(),
+              Timeline(
+                currentUser: currentUser,
+              ),
+              ActivityFeed(
+                currentUser: currentUser,
+              ),
+              Find(
+                currentUser: currentUser,
+              ),
               Profile(
                 profileId: currentUserId,
               ),
@@ -176,14 +187,14 @@ class _AuthScreenState extends State<AuthScreen> {
             heroTag: "hero1",
             child: Animator(
               duration: Duration(milliseconds: 1000),
-              tween: Tween(begin: 1.0, end: 1.5),
+              tween: Tween(begin: 1.4, end: 1.5),
               curve: Curves.bounceIn,
               cycles: 0,
               builder: (Animation<double> anim) => Transform.scale(
                 scale: anim.value,
                 child: Image.asset(
                   'assets/Icons/add.png',
-                  color: Colors.black,
+                  color: Colors.red,
                   width: 36,
                   height: 36,
                 ),

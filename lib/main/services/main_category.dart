@@ -10,10 +10,12 @@ import 'package:garage/main/services/each_categories/spare_parts.dart';
 import 'package:garage/main/services/each_categories/tire_services.dart';
 import 'package:garage/main/services/each_categories/vehicle_modify.dart';
 import 'package:garage/main/services/garages.dart';
+import 'package:garage/models/user.dart';
 import 'package:garage/utils/progress_bars.dart';
 
 class MainCategory extends StatefulWidget {
-  MainCategory({Key key}) : super(key: key);
+  final User currentUser;
+  MainCategory({this.currentUser,Key key}) : super(key: key);
 
   @override
   _MainCategoryState createState() => _MainCategoryState();
@@ -51,7 +53,9 @@ class _MainCategoryState extends State<MainCategory> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => Garages()));
+                                    builder: (context) => Garages(
+                                      currentUser: widget.currentUser,
+                                    )));
                           }
                           if (myData[index]['category_name'] == "Parkings") {
                             Navigator.push(

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:garage/initials/home.dart';
+import 'package:garage/initials/intro.dart';
 import 'package:garage/services/database/userStuff.dart';
 import 'package:garage/utils/flush_bars.dart';
 import 'package:garage/utils/palette.dart';
@@ -173,59 +174,67 @@ class _LoginState extends State<Login> {
     SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(statusBarColor: Colors.transparent));
 
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        brightness: Brightness.light,
-        backgroundColor: Colors.transparent,
-        elevation: 0.0,
-        leading: IconButton(
-            icon: Image.asset(
-              'assets/Icons/left-arrow.png',
-              width: width * 0.07,
-              height: height * 0.07,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            }),
-      ),
-      backgroundColor: Colors.white,
-      extendBodyBehindAppBar: true,
-      body: SingleChildScrollView(
-        child: Container(
-          color: Colors.white,
-          width: width,
-          height: height,
-          child: Column(
-            children: <Widget>[
-              Image.asset('assets/designs/login-intro.png'),
-              loginTextField(width, height, "Email address", false, email),
-              loginTextField(width, height, "Password", true, password),
-              Padding(
-                padding: EdgeInsets.all(height * 0.05),
-                child: Container(
-                  width: width * 0.9,
-                  height: height * 0.09,
-                  child: FlatButton(
-                    onPressed: () async {
-                      await loginFunc();
-                    },
-                    child: Center(
-                        child: Text("Login",
-                            style: TextStyle(
-                              fontSize: 19,
-                              color: Colors.black,
-                            ))),
-                    color: Palette.appColor,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(20.0),
-                        side: BorderSide(
-                          color: Palette.appColor,
-                        )),
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => Intro()));
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          brightness: Brightness.light,
+          backgroundColor: Colors.transparent,
+          elevation: 0.0,
+          leading: IconButton(
+              icon: Image.asset(
+                'assets/Icons/left-arrow.png',
+                width: width * 0.07,
+                height: height * 0.07,
+              ),
+              onPressed: () {
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => Intro()));
+              }),
+        ),
+        backgroundColor: Colors.white,
+        extendBodyBehindAppBar: true,
+        body: SingleChildScrollView(
+          child: Container(
+            color: Colors.white,
+            width: width,
+            height: height,
+            child: Column(
+              children: <Widget>[
+                Image.asset('assets/designs/login-intro.png'),
+                loginTextField(width, height, "Email address", false, email),
+                loginTextField(width, height, "Password", true, password),
+                Padding(
+                  padding: EdgeInsets.all(height * 0.05),
+                  child: Container(
+                    width: width * 0.9,
+                    height: height * 0.09,
+                    child: FlatButton(
+                      onPressed: () async {
+                        await loginFunc();
+                      },
+                      child: Center(
+                          child: Text("Login",
+                              style: TextStyle(
+                                fontSize: 19,
+                                color: Colors.black,
+                              ))),
+                      color: Palette.appColor,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(20.0),
+                          side: BorderSide(
+                            color: Palette.appColor,
+                          )),
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

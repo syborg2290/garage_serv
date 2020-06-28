@@ -6,7 +6,10 @@ import 'package:currency_pickers/currency_pickers.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:garage/main/services/garages.dart';
+import 'package:garage/models/user.dart';
 import 'package:garage/services/database/garageService.dart';
+import 'package:garage/utils/compressMedia.dart';
 import 'package:garage/utils/palette.dart';
 import 'package:garage/utils/progress_bars.dart';
 import 'package:garage/widgets/fullScreenFile.dart';
@@ -26,7 +29,9 @@ import 'package:progress_dialog/progress_dialog.dart';
 class GarageForm extends StatefulWidget {
   final List engineType;
   final List vehicleType;
-  GarageForm({this.engineType, this.vehicleType, Key key}) : super(key: key);
+  final User currentUser;
+  GarageForm({this.engineType, this.vehicleType, this.currentUser, Key key})
+      : super(key: key);
 
   @override
   _GarageFormState createState() => _GarageFormState();
@@ -41,16 +46,29 @@ class _GarageFormState extends State<GarageForm> {
   TextEditingController ownerContactNumber = TextEditingController();
   TextEditingController openController = TextEditingController();
   TextEditingController closeController = TextEditingController();
+  TextEditingController garageAddress = TextEditingController();
   List<File> media = [];
   List<String> mediaType = [];
-  List repairsType = [];
+  List<String> repairsType = [];
   List vehicleTypes = [];
   List engineTypes = [];
-  List<TextEditingController> priceControllers = [];
+  List<List<TextEditingController>> priceControllers = [];
+  List<List<TextEditingController>> allRepairForPrice = [];
   String currentCurrencyType;
   final format = dd.DateFormat("HH:mm");
   DateTime open;
   DateTime close;
+  List<int> closingDays = [];
+  List<String> selectedClosingDays = [];
+  List<String> daysOfAWeek = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday"
+  ];
   ProgressDialog pr;
 
   @override
@@ -58,9 +76,7 @@ class _GarageFormState extends State<GarageForm> {
     super.initState();
     vehicleTypes = widget.vehicleType;
     engineTypes = widget.engineType;
-    widget.vehicleType.forEach((element) {
-      priceControllers.add(TextEditingController());
-    });
+
     getCurrentCurrency();
 
     pr = ProgressDialog(
@@ -102,22 +118,96 @@ class _GarageFormState extends State<GarageForm> {
             ownerContactNumber.text.trim() != "") {
           if (openController.text.trim() != "" &&
               closeController.text.trim() != "") {
-            if (latitude != null && longitude != null) {
-              pr.show();
-              QuerySnapshot snap =
-                  await checkGarageNameAlreadyExist(garageName.text.trim());
-              if (snap.documents.isEmpty) {
-                
-                
-                
+            if (garageAddress.text.trim() != "") {
+              if (latitude != null && longitude != null) {
+                pr.show();
+                QuerySnapshot snap =
+                    await checkGarageNameAlreadyExist(garageName.text.trim());
+                if (snap.documents.isEmpty) {
+                  Map repairDoc = {};
+                  List mediaOrig = [];
+                  List eachPrice = [];
+                  List mediaThumb = [];
+                  List allTypesOfMedia = [];
+
+                  if (repairsType.isNotEmpty) {
+                    for (var i = 0; i < repairsType.length; i++) {
+                      List price = [];
+                      allRepairForPrice[i].forEach((element) {
+                        price.add(element.text.trim());
+                      });
+                      eachPrice.add(price);
+                      price.clear();
+                    }
+                    for (var k = 0; k < eachPrice.length; k++) {
+                      repairDoc[repairsType[k]] = eachPrice[k];
+                    }
+                  }
+
+                  if (media.isNotEmpty) {
+                    for (var j = 0; j < media.length; j++) {
+                      if (mediaType[j] == "image") {
+                        String downUrl = await uploadImageToGarage(
+                            await compressImageFile(media[j], 90));
+                        mediaOrig.add(downUrl);
+                        String downThumbImageUrl =
+                            await uploadThumbImageToGarage(
+                                await getThumbnailForImage(media[j], 45));
+                        mediaThumb.add(downThumbImageUrl);
+                        allTypesOfMedia.add("image");
+                      } else {
+                        String downVideoUrl = await uploadVideoToGarage(
+                            await compressVideoFile(media[j]));
+                        mediaOrig.add(downVideoUrl);
+                        String downThumbVideoUrl =
+                            await uploadThumbVideoToGarage(
+                                await getThumbnailForVideo(media[j]));
+                        mediaThumb.add(downThumbVideoUrl);
+                        allTypesOfMedia.add("video");
+                      }
+                    }
+                  }
+
+                  addAGarage(
+                    widget.currentUser.id,
+                    garageName.text.trim(),
+                    ownerName.text.trim(),
+                    ownerContactNumber.text.trim(),
+                    garagePhone.text.trim(),
+                    latitude,
+                    longitude,
+                    vehicleTypes,
+                    engineTypes,
+                    json.encode(repairDoc),
+                    mediaOrig,
+                    mediaThumb,
+                    allTypesOfMedia,
+                    garageAddress.text.trim(),
+                    Timestamp.fromDate(open),
+                    Timestamp.fromDate(close),
+                    closingDays,
+                  );
+
+                  pr.hide().whenComplete(() {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Garages(
+                                  currentUser: widget.currentUser,
+                                )));
+                  });
+                } else {
+                  pr.hide();
+                  GradientSnackBar.showMessage(
+                      context, "Provided name for the garage is already in!");
+                }
               } else {
-                pr.hide();
                 GradientSnackBar.showMessage(
-                    context, "Provided name for the garage is already in!");
+                    context, "Provide location for the garage!");
               }
             } else {
               GradientSnackBar.showMessage(
-                  context, "Provide location for the garage!");
+                  context, "Provide current address for the garage!");
             }
           } else {
             GradientSnackBar.showMessage(context, "Provide open & close time!");
@@ -552,11 +642,24 @@ class _GarageFormState extends State<GarageForm> {
               child: DateTimeField(
                 format: format,
                 controller: _controller,
-                onChanged: (value) {},
+                onChanged: (value) {
+                  if (isOpen) {
+                    setState(() {
+                      open = value;
+                    });
+                  } else {
+                    close = value;
+                  }
+                },
                 textAlign: TextAlign.center,
                 decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: isOpen ? 'Open At' : 'Close At'),
+                  border: InputBorder.none,
+                  hintText: isOpen ? 'Open At' : 'Close At',
+                  hintStyle: TextStyle(
+                    color: Color.fromRGBO(129, 165, 168, 1),
+                    fontSize: 18,
+                  ),
+                ),
                 onShowPicker: (context, currentValue) async {
                   final time = await showTimePicker(
                     context: context,
@@ -574,12 +677,8 @@ class _GarageFormState extends State<GarageForm> {
     );
   }
 
-  priceBottomSheet(
-    List vehicleType,
-    double width,
-    double height,
-  ) {
-    TextEditingController current = priceControllers[0];
+  priceBottomSheet(List vehicleType, double width, double height, int inNum) {
+    TextEditingController current = allRepairForPrice[inNum][0];
     String currentVehicleType = vehicleType[0];
     String currentVehicleTypeHint = "Enter cost for " + vehicleType[0];
     return showModalBottomSheet(
@@ -637,9 +736,17 @@ class _GarageFormState extends State<GarageForm> {
                                       return GestureDetector(
                                         onTap: () {
                                           setState(() {
-                                            current = priceControllers[index];
                                             currentVehicleType =
                                                 vehicleType[index];
+
+                                            List<TextEditingController>
+                                                allTextSi =
+                                                allRepairForPrice[inNum];
+
+                                            int indexOf = allTextSi.indexOf(
+                                                priceControllers[inNum][index]);
+                                            current = allRepairForPrice[inNum]
+                                                [indexOf];
                                             currentVehicleTypeHint =
                                                 "Enter cost for " +
                                                     vehicleType[index];
@@ -811,7 +918,9 @@ class _GarageFormState extends State<GarageForm> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: FlatButton(
-                onPressed: () async {},
+                onPressed: () async {
+                  await done();
+                },
                 child: Center(
                     child: Text("Done",
                         style: TextStyle(
@@ -868,7 +977,7 @@ class _GarageFormState extends State<GarageForm> {
                                       'assets/Icons/add.png',
                                       width: 60,
                                       height: 60,
-                                      color: Colors.black54,
+                                      color: Color.fromRGBO(129, 165, 168, 1),
                                       fit: BoxFit.contain,
                                     ),
                                   ),
@@ -918,7 +1027,8 @@ class _GarageFormState extends State<GarageForm> {
                                                         'assets/Icons/add.png',
                                                         width: 60,
                                                         height: 60,
-                                                        color: Colors.black54,
+                                                        color: Color.fromRGBO(
+                                                            129, 165, 168, 1),
                                                         fit: BoxFit.contain,
                                                       ),
                                                     ),
@@ -985,7 +1095,7 @@ class _GarageFormState extends State<GarageForm> {
                                         padding:
                                             EdgeInsets.only(left: width * 0.35),
                                         child: FloatingActionButton(
-                                          heroTag: (index + 2).toString(),
+                                          heroTag: null,
                                           onPressed: () {
                                             if (mediaType[index] == "image") {
                                               cropImageFile(media[index])
@@ -1021,7 +1131,7 @@ class _GarageFormState extends State<GarageForm> {
                                         ),
                                       ),
                                       FloatingActionButton(
-                                        heroTag: index.toString(),
+                                        heroTag: index + 3,
                                         onPressed: () {
                                           setState(() {
                                             media.removeAt(index);
@@ -1061,7 +1171,6 @@ class _GarageFormState extends State<GarageForm> {
                   garagePhone, 1, false, true),
               conatinerOfTextField(width, height, "Owner contact number",
                   ownerContactNumber, 1, false, true),
-              conatinerOfLocation(width, height),
               SizedBox(
                 height: 20,
               ),
@@ -1080,6 +1189,156 @@ class _GarageFormState extends State<GarageForm> {
                   openAndClose(width, height, false, closeController),
                 ],
               ),
+              SizedBox(
+                height: 25,
+              ),
+              Text(
+                "Mention days of close your garage",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontSize: 17,
+                ),
+              ),
+              SizedBox(
+                  height: height * 0.1,
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      left: 10,
+                      right: 10,
+                    ),
+                    child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: daysOfAWeek.length,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () {
+                              if (daysOfAWeek[index] == "Monday") {
+                                if (selectedClosingDays.contains("Monday")) {
+                                  setState(() {
+                                    closingDays.remove(1);
+                                    selectedClosingDays.remove("Monday");
+                                  });
+                                } else {
+                                  setState(() {
+                                    closingDays.add(1);
+                                    selectedClosingDays.add("Monday");
+                                  });
+                                }
+                              }
+                              if (daysOfAWeek[index] == "Tuesday") {
+                                if (selectedClosingDays.contains("Tuesday")) {
+                                  setState(() {
+                                    closingDays.remove(2);
+                                    selectedClosingDays.remove("Tuesday");
+                                  });
+                                } else {
+                                  setState(() {
+                                    closingDays.add(2);
+                                    selectedClosingDays.add("Tuesday");
+                                  });
+                                }
+                              }
+                              if (daysOfAWeek[index] == "Wednesday") {
+                                if (selectedClosingDays.contains("Wednesday")) {
+                                  setState(() {
+                                    closingDays.remove(3);
+                                    selectedClosingDays.remove("Wednesday");
+                                  });
+                                } else {
+                                  setState(() {
+                                    closingDays.add(3);
+                                    selectedClosingDays.add("Wednesday");
+                                  });
+                                }
+                              }
+                              if (daysOfAWeek[index] == "Thursday") {
+                                if (selectedClosingDays.contains("Thursday")) {
+                                  setState(() {
+                                    closingDays.remove(4);
+                                    selectedClosingDays.remove("Thursday");
+                                  });
+                                } else {
+                                  setState(() {
+                                    closingDays.add(4);
+                                    selectedClosingDays.add("Thursday");
+                                  });
+                                }
+                              }
+                              if (daysOfAWeek[index] == "Friday") {
+                                if (selectedClosingDays.contains("Friday")) {
+                                  setState(() {
+                                    closingDays.remove(5);
+                                    selectedClosingDays.remove("Friday");
+                                  });
+                                } else {
+                                  setState(() {
+                                    closingDays.add(5);
+                                    selectedClosingDays.add("Friday");
+                                  });
+                                }
+                              }
+                              if (daysOfAWeek[index] == "Saturday") {
+                                if (selectedClosingDays.contains("Saturday")) {
+                                  setState(() {
+                                    closingDays.remove(6);
+                                    selectedClosingDays.remove("Saturday");
+                                  });
+                                } else {
+                                  setState(() {
+                                    closingDays.add(6);
+                                    selectedClosingDays.add("Saturday");
+                                  });
+                                }
+                              }
+                              if (daysOfAWeek[index] == "Sunday") {
+                                if (selectedClosingDays.contains("Sunday")) {
+                                  setState(() {
+                                    closingDays.remove(7);
+                                    selectedClosingDays.remove("Sunday");
+                                  });
+                                } else {
+                                  setState(() {
+                                    closingDays.add(7);
+                                    selectedClosingDays.add("Sunday");
+                                  });
+                                }
+                              }
+                            },
+                            child: Container(
+                              width: width * 0.3,
+                              height: height * 0.1,
+                              color: Colors.white,
+                              child: Card(
+                                clipBehavior: Clip.antiAliasWithSaveLayer,
+                                color: selectedClosingDays
+                                        .contains(daysOfAWeek[index])
+                                    ? Colors.red
+                                    : Colors.white,
+                                child: Center(
+                                  child: Text(daysOfAWeek[index],
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: selectedClosingDays
+                                                .contains(daysOfAWeek[index])
+                                            ? Colors.white
+                                            : Color.fromRGBO(129, 165, 168, 1),
+                                        fontSize: 17,
+                                      )),
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                ),
+                                elevation: 5,
+                                margin: EdgeInsets.all(10),
+                              ),
+                            ),
+                          );
+                        }),
+                  )),
+              conatinerOfTextField(width, height, "Garage current address",
+                  garageAddress, 2, false, false),
+              conatinerOfLocation(width, height),
               SizedBox(
                 height: 30,
               ),
@@ -1125,26 +1384,57 @@ class _GarageFormState extends State<GarageForm> {
                               itemBuilder: (context, index) {
                                 return GestureDetector(
                                   onTap: () {
-                                    var repairIs = repairsType.firstWhere(
-                                        (element) =>
-                                            element["repair"] ==
-                                            myData[index]['repair'],
-                                        orElse: () => null);
-                                    if (repairIs != null) {
+                                    if (repairsType
+                                        .contains(myData[index]['repair'])) {
                                       setState(() {
-                                        repairsType.removeWhere((item) =>
-                                            item['repair'] ==
-                                            myData[index]['repair']);
+                                        repairsType
+                                            .remove(myData[index]['repair']);
+                                        priceControllers.removeAt(index);
+                                        allRepairForPrice.removeAt(index);
                                       });
                                     } else {
-                                      var repair = {
-                                        "repair": myData[index]['repair'],
-                                        "priceForEach": null
-                                      };
+                                      List<TextEditingController> priceEach =
+                                          [];
+                                      vehicleTypes.forEach((element) {
+                                        priceEach.add(TextEditingController());
+                                      });
                                       setState(() {
-                                        repairsType.add(repair);
+                                        repairsType
+                                            .add(myData[index]['repair']);
+                                        priceControllers.add(priceEach);
+                                        allRepairForPrice.add(priceEach);
                                       });
                                     }
+
+                                    // var repairIs = repairsType.firstWhere(
+                                    //     (element) =>
+                                    //         element["repair"] ==
+                                    //         myData[index]['repair'],
+                                    //     orElse: () => null);
+                                    // if (repairIs != null) {
+                                    //   setState(() {
+                                    //     repairsType.removeWhere((item) =>
+                                    //         item['repair'] ==
+                                    //         myData[index]['repair']);
+                                    //     priceControllers.removeAt(index);
+                                    //     allRepairForPrice.removeAt(index);
+                                    //   });
+                                    // } else {
+                                    //   var repair = {
+                                    //     "repair": myData[index]['repair'],
+                                    //     "priceForEach": null
+                                    //   };
+                                    //   List<TextEditingController> priceEach =
+                                    //       [];
+                                    //   vehicleTypes.forEach((element) {
+                                    //     priceEach.add(TextEditingController());
+                                    //   });
+                                    //   setState(() {
+                                    //     repairsType.add(repair);
+                                    //     priceControllers.add(priceEach);
+                                    //     allRepairForPrice.add(priceEach);
+                                    //   });
+                                    // }
                                   },
                                   child: Padding(
                                     padding: const EdgeInsets.all(0.0),
@@ -1158,13 +1448,9 @@ class _GarageFormState extends State<GarageForm> {
                                         child: Container(
                                           width: width * 0.5,
                                           height: height * 0.23,
-                                          color: repairsType.firstWhere(
-                                                      (element) =>
-                                                          element["repair"] ==
-                                                          myData[index]
-                                                              ['repair'],
-                                                      orElse: () => null) !=
-                                                  null
+                                          color: repairsType.contains(
+                                            myData[index]['repair'],
+                                          )
                                               ? Palette.appColor
                                               : Colors.white,
                                           child: Column(
@@ -1181,55 +1467,44 @@ class _GarageFormState extends State<GarageForm> {
                                                         textAlign:
                                                             TextAlign.center,
                                                         style: TextStyle(
-                                                          color: repairsType.firstWhere(
-                                                                      (element) =>
-                                                                          element[
-                                                                              "repair"] ==
-                                                                          myData[index]
-                                                                              [
-                                                                              'repair'],
-                                                                      orElse: () =>
-                                                                          null) !=
-                                                                  null
+                                                          color: repairsType
+                                                                  .contains(
+                                                            myData[index]
+                                                                ['repair'],
+                                                          )
                                                               ? Colors.black
-                                                              : Colors.black38,
+                                                              : Color.fromRGBO(
+                                                                  129,
+                                                                  165,
+                                                                  168,
+                                                                  1),
                                                           fontSize: 16,
                                                         ),
                                                       ),
                                                     ),
                                                   ),
                                                   GestureDetector(
-                                                    onTap: repairsType.firstWhere(
-                                                                (element) =>
-                                                                    element[
-                                                                        "repair"] ==
-                                                                    myData[index]
-                                                                        [
-                                                                        'repair'],
-                                                                orElse: () =>
-                                                                    null) ==
-                                                            null
-                                                        ? null
-                                                        : () {
-                                                            priceBottomSheet(
-                                                                vehicleTypes,
-                                                                width,
-                                                                height);
-                                                          },
+                                                    onTap:
+                                                        !repairsType.contains(
+                                                      myData[index]['repair'],
+                                                    )
+                                                            ? null
+                                                            : () {
+                                                                priceBottomSheet(
+                                                                    vehicleTypes,
+                                                                    width,
+                                                                    height,
+                                                                    index);
+                                                              },
                                                     child: Image.asset(
                                                         'assets/Icons/price.png',
                                                         width: 60,
                                                         height: 60,
-                                                        color: repairsType.firstWhere(
-                                                                    (element) =>
-                                                                        element[
-                                                                            "repair"] ==
-                                                                        myData[index]
-                                                                            [
-                                                                            'repair'],
-                                                                    orElse: () =>
-                                                                        null) !=
-                                                                null
+                                                        color: !repairsType
+                                                                .contains(
+                                                          myData[index]
+                                                              ['repair'],
+                                                        )
                                                             ? Colors.black
                                                             : Colors.black38),
                                                   )

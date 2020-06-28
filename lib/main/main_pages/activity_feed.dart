@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:garage/models/user.dart';
 
 class ActivityFeed extends StatefulWidget {
-  ActivityFeed({Key key}) : super(key: key);
+   final User currentUser;
+  ActivityFeed({this.currentUser,Key key}) : super(key: key);
 
   @override
   _ActivityFeedState createState() => _ActivityFeedState();

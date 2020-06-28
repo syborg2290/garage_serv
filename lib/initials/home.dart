@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:garage/initials/auth_screen.dart';
 import 'package:garage/initials/intro.dart';
+import 'package:garage/initials/login.dart';
 import 'package:garage/models/user.dart';
 import 'package:garage/services/database/userStuff.dart';
 import 'package:garage/utils/progress_bars.dart';
@@ -16,7 +17,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  bool isActive = true;
+  bool isActive = false;
   bool isAuth = false;
   String userId;
   User currentUserm;
@@ -34,31 +35,46 @@ class _HomeState extends State<Home> {
     userId = pref.getString('userid');
     if (userId != null) {
       DocumentSnapshot snapshot = await getCurrentUserSe(userId);
-      currentUserm = User.fromDocument(snapshot);
-      setState(() {
-        isAuth = true;
-      });
-      currentUser();
+      if (snapshot.exists) {
+        currentUserm = User.fromDocument(snapshot);
+        setState(() {
+          isAuth = true;
+        });
+        currentUser();
+      }
     } else {
+      if (!mounted) {
+        return;
+      }
       setState(() {
         isAuth = false;
       });
     }
-
+    if (!mounted) {
+      return;
+    }
     setState(() {
       isLoading = false;
     });
   }
 
   currentUser() {
-    if (currentUserm.active == true) {
-      setState(() {
-        isActive = true;
-      });
-    } else {
-      setState(() {
-        isActive = false;
-      });
+    if (currentUserm != null) {
+      if (currentUserm.active == true) {
+        if (!mounted) {
+          return;
+        }
+        setState(() {
+          isActive = true;
+        });
+      } else {
+        if (!mounted) {
+          return;
+        }
+        setState(() {
+          isActive = false;
+        });
+      }
     }
   }
 
@@ -70,24 +86,15 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     if (!isLoading) {
-      if (isAuth) {
-        if (isActive) {
-          return AuthScreen();
+      if (currentUserm != null) {
+        if (isAuth) {
+          if (isActive) {
+            return AuthScreen();
+          } else {
+            return Intro();
+          }
         } else {
-          AwesomeDialog(
-            context: context,
-            animType: AnimType.SCALE,
-            dialogType: DialogType.WARNING,
-            body: Center(
-              child: Text(
-                'Your account was blocked!',
-                style: TextStyle(fontStyle: FontStyle.italic),
-              ),
-            ),
-            btnOkOnPress: () {
-              logoutInHome();
-            },
-          )..show();
+          return Intro();
         }
       } else {
         return Intro();

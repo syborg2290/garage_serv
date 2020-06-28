@@ -3,12 +3,14 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:garage/main/services/each_categories/forms/garageForm.dart';
+import 'package:garage/models/user.dart';
 import 'package:garage/utils/flush_bars.dart';
 import 'package:garage/utils/palette.dart';
 import 'package:garage/utils/progress_bars.dart';
 
 class CustomGarage extends StatefulWidget {
-  CustomGarage({Key key}) : super(key: key);
+  final User currrentUser;
+  CustomGarage({this.currrentUser, Key key}) : super(key: key);
 
   @override
   _CustomGarageState createState() => _CustomGarageState();
@@ -61,6 +63,7 @@ class _CustomGarageState extends State<CustomGarage> {
                           builder: (context) => GarageForm(
                                 engineType: engineType,
                                 vehicleType: vehicleType,
+                                currentUser: widget.currrentUser,
                               )));
                 } else {
                   GradientSnackBar.showMessage(

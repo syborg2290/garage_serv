@@ -51,8 +51,13 @@ createUserInDatabaseSe(
     "firstname": firstname,
     "lastname": lastname,
     "username": username,
+    "contactNumber": null,
+    "location": null,
+    "dob": null,
+    "userPhotoUrl": null,
+    "thumbnailUserPhotoUrl": null,
+    "aboutYou": null,
     "email": email,
-    "services": null,
     "isOnline": true,
     "recentOnline": timestamp,
     "active": true,
@@ -112,7 +117,6 @@ Future<String> uploadImageProfilePicThumbnail(
   return downloadURL;
 }
 
-
-updateProfile(String userId,dynamic obj){
-   userRef.document(userId).updateData(obj);
+updateProfile(String userId, dynamic obj) {
+  userRef.document(userId).updateData(obj);
 }

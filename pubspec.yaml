@@ -53,6 +53,9 @@ dependencies:
   photo_view: ^0.9.2
   empty_widget: ^0.0.1
   uuid: ^2.1.0
+  flutter_video_compress: ^0.3.7+8
+  flutter_cache_manager: ^1.4.1
+  flutter_polyline_points: ^0.2.1
   chewie:
     path: ./lib/modified_lib/chewie-0.9.10
   flutter_google_places:
@@ -87,6 +90,7 @@ flutter:
     - assets/Icons/normal.png
     - assets/Icons/service.png
     - assets/Icons/left-arrow.png
+    - assets/Icons/map_user.png
     - assets/Icons/user.png
     - assets/Icons/computer.png
     - assets/Icons/emergency.png
@@ -159,7 +163,10 @@ flutter:
     - assets/json/light.json
     
     - assets/markers/garage.png
-    - assets/markers/garage2.png
+    - assets/markers/garaMarker_red.png
+    - assets/markers/garaMarker_blue.png
+    - assets/markers/garaMarker_green.png
+    - assets/markers/garaMarker_yellow.png
     
 
   

@@ -12,7 +12,6 @@ class User {
   final String thumbnailUserPhotoUrl;
   final String aboutYou;
   final String email;
-  final List services;
   final bool isOnline;
   final Timestamp recentOnline;
   final bool active;
@@ -30,7 +29,6 @@ class User {
       this.thumbnailUserPhotoUrl,
       this.aboutYou,
       this.email,
-      this.services,
       this.isOnline,
       this.recentOnline,
       this.active,
@@ -49,7 +47,6 @@ class User {
         thumbnailUserPhotoUrl: doc['thumbnailUserPhotoUrl'],
         aboutYou: doc['aboutYou'],
         email: doc['email'],
-        services: doc['services'],
         isOnline: doc['isOnline'],
         recentOnline: doc['recentOnline'],
         active: doc['active'],

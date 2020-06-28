@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:garage/main/services/main_category.dart';
-import 'package:garage/utils/palette.dart';
+import 'package:garage/models/user.dart';
 
 class Timeline extends StatefulWidget {
-  Timeline({Key key}) : super(key: key);
+  final User currentUser;
+  Timeline({this.currentUser, Key key}) : super(key: key);
 
   @override
   _TimelineState createState() => _TimelineState();
@@ -63,7 +64,9 @@ class _TimelineState extends State<Timeline> {
             SizedBox(
               height: 10,
             ),
-            MainCategory(),
+            MainCategory(
+              currentUser: widget.currentUser,
+            ),
           ],
         ),
       ),
