@@ -56,6 +56,7 @@ dependencies:
   flutter_video_compress: ^0.3.7+8
   flutter_cache_manager: ^1.4.1
   flutter_polyline_points: ^0.2.1
+  rating_bar: ^0.2.0
   chewie:
     path: ./lib/modified_lib/chewie-0.9.10
   flutter_google_places:
@@ -152,6 +153,10 @@ flutter:
     - assets/Icons/pause.png
     - assets/Icons/cut.png
     - assets/Icons/hand.png
+    - assets/Icons/comment.png
+    - assets/Icons/share.png
+    - assets/Icons/love.png
+    - assets/Icons/love_red.png
     
     - assets/json/main_category.json
     - assets/json/garage_vehicles.json

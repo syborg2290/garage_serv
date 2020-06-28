@@ -20,6 +20,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:ui' as ui;
 import 'package:intl/intl.dart';
 import 'package:location/location.dart' as lo;
+import 'package:rating_bar/rating_bar.dart';
 
 class Garages extends StatefulWidget {
   final User currentUser;
@@ -42,6 +43,7 @@ class _GaragesState extends State<Garages> {
   StreamSubscription _locationSubscription;
   List<LatLng> polylineCoordinates = [];
   PolylinePoints polylinePoints = PolylinePoints();
+  double _ratingSmile = 0;
 
   @override
   void initState() {
@@ -405,6 +407,73 @@ class _GaragesState extends State<Garages> {
                             ],
                           ),
                         ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          "Rate the " + garage.garageName,
+                          style: TextStyle(fontSize: 18),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        RatingBar(
+                          onRatingChanged: (rating) =>
+                              setState(() => _ratingSmile = rating),
+                          filledIcon: Icons.sentiment_satisfied,
+                          emptyIcon: Icons.sentiment_dissatisfied,
+                          halfFilledIcon: Icons.sentiment_neutral,
+                          isHalfAllowed: true,
+                          filledColor: Colors.green,
+                          emptyColor: Colors.redAccent,
+                          halfFilledColor: Colors.amberAccent,
+                          size: 48,
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Divider(),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: <Widget>[
+                            Column(
+                              children: <Widget>[
+                                Image.asset(
+                                  'assets/Icons/love.png',
+                                  width: 40,
+                                  height: 40,
+                                ),
+                                Text("0 likes"),
+                              ],
+                            ),
+                            Column(
+                              children: <Widget>[
+                                Image.asset(
+                                  'assets/Icons/comment.png',
+                                  width: 40,
+                                  height: 40,
+                                ),
+                                Text("0 comments"),
+                              ],
+                            ),
+                            Column(
+                              children: <Widget>[
+                                Image.asset(
+                                  'assets/Icons/share.png',
+                                  width: 40,
+                                  height: 40,
+                                ),
+                                Text("0 shares"),
+                              ],
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
                       ],
                     ),
                   ],
@@ -679,10 +748,11 @@ class _GaragesState extends State<Garages> {
                                       backgroundColor: Palette.appColor,
                                       onPressed: _onMapTypeButtonPressed,
                                       child: Icon(
-                                        Icons.map,
+                                        Icons.search,
                                         color: Colors.black,
+                                        size: 40,
                                       ),
-                                      heroTag: "btnMapType",
+                                      heroTag: "btnSearch",
                                     ),
                                   ],
                                 ),
@@ -691,7 +761,7 @@ class _GaragesState extends State<Garages> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(top: height * 0.1),
+                          padding: EdgeInsets.only(top: height * 0.2),
                           child: Container(
                             child: Padding(
                               padding: EdgeInsets.all(16.0),
@@ -706,10 +776,10 @@ class _GaragesState extends State<Garages> {
                                       backgroundColor: Palette.appColor,
                                       onPressed: _onMapTypeButtonPressed,
                                       child: Icon(
-                                        Icons.search,
+                                        Icons.map,
                                         color: Colors.black,
                                       ),
-                                      heroTag: "btnSearch",
+                                      heroTag: "btnMapType",
                                     ),
                                   ],
                                 ),
