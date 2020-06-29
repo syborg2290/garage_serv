@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:garage/config/collections.dart';
+import 'package:garage/models/main_services/garage.dart';
 import 'package:uuid/uuid.dart';
 
 Future<QuerySnapshot> checkGarageNameAlreadyExist(String garageName) async {
@@ -15,30 +16,37 @@ Stream<QuerySnapshot> streamingGarage() {
   return garageRef.orderBy('timestamp', descending: true).snapshots();
 }
 
+Stream<QuerySnapshot> streamingSingleGarage(String garageId) {
+  return garageRef
+      .where('id', isEqualTo: garageId)
+      .orderBy('timestamp', descending: true)
+      .snapshots();
+}
+
 Future<QuerySnapshot> garagesAll() async {
   final result = await garageRef.getDocuments();
   return result;
 }
 
 addAGarage(
-  String currentUserId,
-  String garageName,
-  String ownerName,
-  String ownerContactNumber,
-  String garageContactNumber,
-  double latitude,
-  double longitude,
-  dynamic vehicleTypes,
-  dynamic vehicleEngineType,
-  dynamic preferredRepair,
-  dynamic mediaOrig,
-  dynamic mediaThumb,
-  dynamic mediaTypes,
-  String garageAddress,
-  Timestamp openAt,
-  Timestamp closeAt,
-  dynamic closedDays
-) {
+    String currentUserId,
+    String garageName,
+    String ownerName,
+    String ownerContactNumber,
+    String garageContactNumber,
+    double latitude,
+    double longitude,
+    dynamic vehicleTypes,
+    dynamic vehicleEngineType,
+    dynamic preferredRepair,
+    dynamic eachRepairPrice,
+    dynamic mediaOrig,
+    dynamic mediaThumb,
+    dynamic mediaTypes,
+    String garageAddress,
+    Timestamp openAt,
+    Timestamp closeAt,
+    dynamic closedDays) {
   var uuid = Uuid();
   garageRef.add({
     "id": uuid.v1().toString() + new DateTime.now().toString(),
@@ -53,6 +61,7 @@ addAGarage(
     "vehiclesType": vehicleTypes,
     "vehicleEngineType": vehicleEngineType,
     "preferredRepair": preferredRepair,
+    "preferredRepairForPrice": eachRepairPrice,
     "mediaOrig": mediaOrig,
     "mediaThumb": mediaThumb,
     "mediaTypes": mediaTypes,
@@ -106,4 +115,13 @@ Future<String> uploadThumbVideoToGarage(File imageFile) async {
   StorageTaskSnapshot storageSnapshot = await uploadTask.onComplete;
   String downloadURL = await storageSnapshot.ref.getDownloadURL();
   return downloadURL;
+}
+
+updateGarageRating(String garageId, double newRating, String currentUserId,
+    String docId) async {
+  final result =
+      await garageRef.where('id', isEqualTo: garageId).getDocuments();
+  Garage reGarage = Garage.fromDocument(result.documents[0]);
+  
+  garageRef.document(docId).updateData({'ratings.$currentUserId': newRating});
 }

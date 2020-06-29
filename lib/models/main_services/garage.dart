@@ -13,12 +13,14 @@ class Garage {
   final dynamic vehiclesType;
   final dynamic vehicleEngineType;
   final dynamic preferredRepair;
+  final dynamic preferredRepairForPrice;
   final dynamic mediaOrig;
   final dynamic mediaThumb;
   final dynamic mediaTypes;
   final Timestamp openAt;
   final Timestamp closeAt;
   final dynamic closedDays;
+  final dynamic ratings;
   final Timestamp timestamp;
 
   Garage(
@@ -34,12 +36,14 @@ class Garage {
       this.vehiclesType,
       this.vehicleEngineType,
       this.preferredRepair,
+      this.preferredRepairForPrice,
       this.mediaOrig,
       this.mediaThumb,
       this.mediaTypes,
       this.openAt,
       this.closeAt,
       this.closedDays,
+      this.ratings,
       this.timestamp});
 
   factory Garage.fromDocument(DocumentSnapshot doc) {
@@ -56,12 +60,14 @@ class Garage {
         vehiclesType: doc['vehiclesType'],
         vehicleEngineType: doc['vehicleEngineType'],
         preferredRepair: doc['preferredRepair'],
+        preferredRepairForPrice: doc['preferredRepairForPrice'],
         mediaOrig: doc['mediaOrig'],
         mediaThumb: doc['mediaThumb'],
         mediaTypes: doc['mediaTypes'],
         openAt: doc['openAt'],
         closeAt: doc['closeAt'],
         closedDays: doc['closedDays'],
+        ratings: doc['ratings'],
         timestamp: doc['timestamp']);
   }
 }

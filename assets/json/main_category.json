@@ -4,16 +4,16 @@
         "image_path": "assets/Icons/garage.png"
     },
     {
-        "category_name": "Parkings",
-        "image_path": "assets/Icons/parking.png"
-    },
-    {
         "category_name": "Service centers",
         "image_path": "assets/Icons/service_center.png"
     },
     {
         "category_name": "Spare parts/accessories",
         "image_path": "assets/Icons/spare_parts.png"
+    },
+    {
+        "category_name": "Parkings",
+        "image_path": "assets/Icons/parking.png"
     },
     {
         "category_name": "Emergency vehicles",

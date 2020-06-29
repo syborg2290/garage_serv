@@ -30,7 +30,7 @@ class _SignupState extends State<Signup> {
   @override
   void initState() {
     super.initState();
-    pr = ProgressDialog(
+   pr = ProgressDialog(
       context,
       type: ProgressDialogType.Download,
       textDirection: TextDirection.ltr,
@@ -42,7 +42,24 @@ class _SignupState extends State<Signup> {
         width: 100,
         height: 100,
         child: Center(
-          child: circularProgress(),
+          child: Padding(
+            padding: EdgeInsets.only(
+              top: 15,
+              bottom: 10,
+            ),
+            child: Column(
+              children: <Widget>[
+                flashProgress(),
+                Text("creating your account...",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Color.fromRGBO(129, 165, 168, 1),
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    )),
+              ],
+            ),
+          ),
         ),
       ),
       showLogs: false,

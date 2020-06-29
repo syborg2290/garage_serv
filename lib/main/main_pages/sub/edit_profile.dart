@@ -64,7 +64,24 @@ class _EditProfileState extends State<EditProfile> {
         width: 100,
         height: 100,
         child: Center(
-          child: circularProgress(),
+          child: Padding(
+            padding: EdgeInsets.only(
+              top: 15,
+              bottom: 10,
+            ),
+            child: Column(
+              children: <Widget>[
+                flashProgress(),
+                Text("saving your profile...",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Color.fromRGBO(129, 165, 168, 1),
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    )),
+              ],
+            ),
+          ),
         ),
       ),
       showLogs: false,
@@ -217,8 +234,8 @@ class _EditProfileState extends State<EditProfile> {
                       ),
                       GestureDetector(
                         onTap: () async {
-                          List<AssetEntity> imgList =
-                              await openGalleryWindow(context, 1, PickType.onlyImage);
+                          List<AssetEntity> imgList = await openGalleryWindow(
+                              context, 1, PickType.onlyImage);
 
                           if (imgList != null) {
                             if (imgList.isNotEmpty) {

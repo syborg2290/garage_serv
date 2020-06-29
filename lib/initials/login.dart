@@ -36,7 +36,7 @@ class _LoginState extends State<Login> {
         width: 100,
         height: 100,
         child: Center(
-          child: circularProgress(),
+          child: flashProgress(),
         ),
       ),
       showLogs: false,

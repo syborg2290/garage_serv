@@ -9,3 +9,11 @@ Container circularProgress() {
         PixLoader(loaderType: LoaderType.Spinner, faceColor: Palette.appColor),
   );
 }
+
+Container flashProgress() {
+  return Container(
+    padding: EdgeInsets.only(bottom: 10.0),
+    child:
+        PixLoader(loaderType: LoaderType.Flashing, faceColor: Palette.appColor),
+  );
+}

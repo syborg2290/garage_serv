@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -43,7 +44,10 @@ class _GaragesState extends State<Garages> {
   StreamSubscription _locationSubscription;
   List<LatLng> polylineCoordinates = [];
   PolylinePoints polylinePoints = PolylinePoints();
-  double _ratingSmile = 0;
+  double allRating = 0;
+  double currentRating = 0;
+  Garage snapGarage;
+  double distance = 0;
 
   @override
   void initState() {
@@ -224,7 +228,7 @@ class _GaragesState extends State<Garages> {
               Marker(
                 markerId: MarkerId("usermarkermap222"),
                 position: LatLng(newLocalData.latitude, newLocalData.longitude),
-                rotation: newLocalData.heading,
+                // rotation: newLocalData.heading,
                 icon: widget.currentUser.userPhotoUrl != null
                     ? customIcon
                     : BitmapDescriptor.fromBytes(markerIcon),
@@ -281,8 +285,7 @@ class _GaragesState extends State<Garages> {
     super.didUpdateWidget(oldWidget);
   }
 
-  pinBottomSheet(
-      Garage garage, String docId, double distance, bool isAvailable) {
+  pinBottomSheet(Garage garage, String docId, bool isAvailable) async {
     return showModalBottomSheet(
             backgroundColor: Colors.transparent,
             elevation: 0.0,
@@ -291,194 +294,298 @@ class _GaragesState extends State<Garages> {
             enableDrag: true,
             context: context,
             builder: (BuildContext bc) {
-              return Container(
-                decoration: new BoxDecoration(
-                    color: Colors.white, //new Color.fromRGBO(255, 0, 0, 0.0),
-                    borderRadius: new BorderRadius.only(
-                        topLeft: const Radius.circular(50.0),
-                        topRight: const Radius.circular(50.0))),
-                padding: EdgeInsets.only(
-                  left: 40,
-                  right: 40,
-                  bottom: 3,
-                  top: 30,
-                ),
-                child: new Wrap(
-                  children: <Widget>[
-                    Column(
-                      children: <Widget>[
-                        Center(
-                            child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              return StatefulBuilder(
+                  builder: (BuildContext context, StateSetter state) {
+                return StreamBuilder(
+                    stream: streamingSingleGarage(garage.id),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        snapGarage =
+                            Garage.fromDocument(snapshot.data.documents[0]);
+
+                        if (snapGarage.ratings != null) {
+                          snapGarage.ratings.forEach((key, value) {
+                            if (allRating >= 1 && allRating <= 10) {
+                              allRating = (allRating + value) / 10;
+                            }
+                            if (allRating > 10 && allRating <= 100) {
+                              allRating = (allRating + value) / 100;
+                            }
+                            if (allRating > 100 && allRating <= 1000) {
+                              allRating = (allRating + value) / 1000;
+                            }
+
+                            if (allRating > 1000 && allRating <= 10000) {
+                              allRating = (allRating + value) / 10000;
+                            }
+
+                            if (allRating > 10000 && allRating <= 100000) {
+                              allRating = (allRating + value) / 100000;
+                            }
+
+                            if (allRating > 100000 && allRating <= 1000000) {
+                              allRating = (allRating + value) / 1000000;
+                            }
+
+                            if (allRating > 1000000 && allRating <= 10000000) {
+                              allRating = (allRating + value) / 10000000;
+                            }
+
+                            if (allRating > 10000000 &&
+                                allRating <= 100000000) {
+                              allRating = (allRating + value) / 100000000;
+                            }
+                          });
+                        }
+                        if (snapGarage.ratings != null) {
+                          bool isContain = snapGarage.ratings
+                              .containsKey(widget.currentUser.id);
+                          if (isContain) {
+                            currentRating =
+                                snapGarage.ratings[widget.currentUser.id];
+                          }
+                        }
+                      }
+
+                      if (snapGarage != null) {
+                        Geolocator()
+                            .distanceBetween(
+                          snapGarage.latitude,
+                          snapGarage.longitude,
+                          current.latitude,
+                          current.longitude,
+                        )
+                            .then((value) {
+                          distance = value;
+                        });
+                      }
+
+                      return Container(
+                        decoration: new BoxDecoration(
+                            color: Colors
+                                .white, //new Color.fromRGBO(255, 0, 0, 0.0),
+                            borderRadius: new BorderRadius.only(
+                                topLeft: const Radius.circular(50.0),
+                                topRight: const Radius.circular(50.0))),
+                        padding: EdgeInsets.only(
+                          left: 40,
+                          right: 40,
+                          bottom: 3,
+                          top: 30,
+                        ),
+                        child: new Wrap(
                           children: <Widget>[
-                            Icon(Icons.near_me, size: 27),
-                            Text(
-                              garage.garageName,
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            ((distance / 1000).round()) < 1
-                                ? Text(
-                                    '${(distance).round()}' + " M",
-                                    style: TextStyle(
-                                      color: Colors.black54,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
+                            Column(
+                              children: <Widget>[
+                                Center(
+                                    child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: <Widget>[
+                                    Icon(Icons.near_me, size: 27),
+                                    Text(
+                                      garage.garageName,
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
-                                  )
-                                : Text(
-                                    '${(distance / 1000).round()}' + " Km",
-                                    style: TextStyle(
-                                      color: Colors.black54,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                          ],
-                        )),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Icon(Icons.location_on, size: 20),
-                            Text(
-                              garage.garageAddress,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 18),
-                            ),
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Chip(
-                            label: isAvailable
-                                ? Text(
-                                    "Open",
-                                    style: TextStyle(
-                                        fontSize: 20, color: Colors.white),
-                                  )
-                                : Text(
-                                    "Close",
-                                    style: TextStyle(
-                                        fontSize: 20, color: Colors.white),
-                                  ),
-                            backgroundColor:
-                                isAvailable ? Color(0xff39b54a) : Colors.red,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(2.0),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: <Widget>[
-                              GestureDetector(
-                                onTap: () async {},
-                                child: Container(
-                                  margin: const EdgeInsets.all(15.0),
-                                  padding: const EdgeInsets.all(15.0),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20),
-                                      border: Border.all(color: Colors.black)),
-                                  child: Row(
-                                    children: <Widget>[
-                                      Padding(
-                                        padding: const EdgeInsets.all(2.0),
-                                        child: Text("know more",
+                                    ((distance / 1000).round()) < 1
+                                        ? Text(
+                                            '${(distance).round()}' + " M",
                                             style: TextStyle(
-                                              color: Colors.black,
+                                              color: Colors.black54,
                                               fontSize: 20,
                                               fontWeight: FontWeight.bold,
-                                            )),
+                                            ),
+                                          )
+                                        : Text(
+                                            '${(distance / 1000).round()}' +
+                                                " Km",
+                                            style: TextStyle(
+                                              color: Colors.black54,
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                  ],
+                                )),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Icon(Icons.location_on, size: 20),
+                                    Text(
+                                      garage.garageAddress,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(fontSize: 18),
+                                    ),
+                                  ],
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(4.0),
+                                  child: Chip(
+                                    label: isAvailable
+                                        ? Text(
+                                            "Open",
+                                            style: TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.white),
+                                          )
+                                        : Text(
+                                            "Close",
+                                            style: TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.white),
+                                          ),
+                                    backgroundColor: isAvailable
+                                        ? Color(0xff39b54a)
+                                        : Colors.red,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(2.0),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: <Widget>[
+                                      GestureDetector(
+                                        onTap: () async {},
+                                        child: Container(
+                                          margin: const EdgeInsets.all(15.0),
+                                          padding: const EdgeInsets.all(15.0),
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                              border: Border.all(
+                                                  color: Colors.black)),
+                                          child: Row(
+                                            children: <Widget>[
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(2.0),
+                                                child: Text("know more",
+                                                    style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 20,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    )),
+                                              ),
+                                              Icon(
+                                                Icons.forward,
+                                                size: 30,
+                                              )
+                                            ],
+                                          ),
+                                        ),
                                       ),
-                                      Icon(
-                                        Icons.forward,
-                                        size: 30,
-                                      )
                                     ],
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Text(
-                          "Rate the " + garage.garageName,
-                          style: TextStyle(fontSize: 18),
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        RatingBar(
-                          onRatingChanged: (rating) =>
-                              setState(() => _ratingSmile = rating),
-                          filledIcon: Icons.sentiment_satisfied,
-                          emptyIcon: Icons.sentiment_dissatisfied,
-                          halfFilledIcon: Icons.sentiment_neutral,
-                          isHalfAllowed: true,
-                          filledColor: Colors.green,
-                          emptyColor: Colors.redAccent,
-                          halfFilledColor: Colors.amberAccent,
-                          size: 48,
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Divider(),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: <Widget>[
-                            Column(
-                              children: <Widget>[
-                                Image.asset(
-                                  'assets/Icons/love.png',
-                                  width: 40,
-                                  height: 40,
+                                SizedBox(
+                                  height: 10,
                                 ),
-                                Text("0 likes"),
-                              ],
-                            ),
-                            Column(
-                              children: <Widget>[
-                                Image.asset(
-                                  'assets/Icons/comment.png',
-                                  width: 40,
-                                  height: 40,
+                                Text(
+                                  "Rate the " + garage.garageName,
+                                  style: TextStyle(fontSize: 18),
                                 ),
-                                Text("0 comments"),
-                              ],
-                            ),
-                            Column(
-                              children: <Widget>[
-                                Image.asset(
-                                  'assets/Icons/share.png',
-                                  width: 40,
-                                  height: 40,
+                                SizedBox(
+                                  height: 5,
                                 ),
-                                Text("0 shares"),
+                                Column(
+                                  children: <Widget>[
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: <Widget>[
+                                        RatingBar(
+                                          onRatingChanged: (rating) async {
+                                            await updateGarageRating(
+                                                garage.id,
+                                                rating,
+                                                widget.currentUser.id,
+                                                docId);
+                                          },
+                                          filledIcon: Icons.sentiment_satisfied,
+                                          emptyIcon:
+                                              Icons.sentiment_dissatisfied,
+                                          halfFilledIcon:
+                                              Icons.sentiment_neutral,
+                                          isHalfAllowed: true,
+                                          filledColor: Colors.green,
+                                          emptyColor: Colors.redAccent,
+                                          halfFilledColor: Colors.amberAccent,
+                                          size: 48,
+                                          initialRating: currentRating,
+                                        ),
+                                        Text(" / " + allRating.toString(),
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 20,
+                                            )),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    Divider(),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: <Widget>[
+                                        Column(
+                                          children: <Widget>[
+                                            Image.asset(
+                                              'assets/Icons/love.png',
+                                              width: 40,
+                                              height: 40,
+                                            ),
+                                            Text("0 likes"),
+                                          ],
+                                        ),
+                                        Column(
+                                          children: <Widget>[
+                                            Image.asset(
+                                              'assets/Icons/comment.png',
+                                              width: 40,
+                                              height: 40,
+                                            ),
+                                            Text("0 comments"),
+                                          ],
+                                        ),
+                                        Column(
+                                          children: <Widget>[
+                                            Image.asset(
+                                              'assets/Icons/share.png',
+                                              width: 40,
+                                              height: 40,
+                                            ),
+                                            Text("0 shares"),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
                               ],
                             ),
                           ],
                         ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              );
+                      );
+                    });
+              });
             }) ??
         false;
   }
@@ -603,6 +710,8 @@ class _GaragesState extends State<Garages> {
                       DateTime closeAt = aGarage.closeAt.toDate();
                       allGarages.add(aGarage);
                       _center = current;
+                      double allRatings = 0;
+
                       if (date.hour < closeAt.hour && date.hour > openAt.hour) {
                         if (aGarage.closedDays.contains(date.weekday)) {
                           _markersSnap.add(Marker(
@@ -616,17 +725,9 @@ class _GaragesState extends State<Garages> {
                             flat: true,
                             draggable: false,
                             onTap: () async {
-                              var _distanceInMeters =
-                                  await Geolocator().distanceBetween(
-                                aGarage.latitude,
-                                aGarage.longitude,
-                                current.latitude,
-                                current.longitude,
-                              );
                               await pinBottomSheet(
                                 aGarage,
                                 garageEle.documentID,
-                                _distanceInMeters,
                                 false,
                               );
                               await setPolylines(
@@ -649,18 +750,17 @@ class _GaragesState extends State<Garages> {
                             flat: true,
                             draggable: false,
                             onTap: () async {
-                              var _distanceInMeters =
-                                  await Geolocator().distanceBetween(
-                                aGarage.latitude,
-                                aGarage.longitude,
-                                current.latitude,
-                                current.longitude,
-                              );
+                              // var _distanceInMeters =
+                              //     await Geolocator().distanceBetween(
+                              //   aGarage.latitude,
+                              //   aGarage.longitude,
+                              //   current.latitude,
+                              //   current.longitude,
+                              // );
                               await pinBottomSheet(
                                 aGarage,
                                 garageEle.documentID,
-                                _distanceInMeters,
-                                false,
+                                true,
                               );
                               await setPolylines(
                                   current.latitude,
@@ -681,17 +781,9 @@ class _GaragesState extends State<Garages> {
                           flat: true,
                           draggable: false,
                           onTap: () async {
-                            var _distanceInMeters =
-                                await Geolocator().distanceBetween(
-                              aGarage.latitude,
-                              aGarage.longitude,
-                              current.latitude,
-                              current.longitude,
-                            );
                             await pinBottomSheet(
                               aGarage,
                               garageEle.documentID,
-                              _distanceInMeters,
                               false,
                             );
                             await setPolylines(

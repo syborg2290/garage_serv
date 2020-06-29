@@ -91,7 +91,24 @@ class _GarageFormState extends State<GarageForm> {
         width: 100,
         height: 100,
         child: Center(
-          child: circularProgress(),
+          child: Padding(
+            padding: EdgeInsets.only(
+              top: 15,
+              bottom: 10,
+            ),
+            child: Column(
+              children: <Widget>[
+                flashProgress(),
+                Text("making your garage...",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Color.fromRGBO(129, 165, 168, 1),
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    )),
+              ],
+            ),
+          ),
         ),
       ),
       showLogs: false,
@@ -124,23 +141,18 @@ class _GarageFormState extends State<GarageForm> {
                 QuerySnapshot snap =
                     await checkGarageNameAlreadyExist(garageName.text.trim());
                 if (snap.documents.isEmpty) {
-                  Map repairDoc = {};
                   List mediaOrig = [];
-                  List eachPrice = [];
+                  List<List<int>> eachPrice = [];
                   List mediaThumb = [];
                   List allTypesOfMedia = [];
 
                   if (repairsType.isNotEmpty) {
                     for (var i = 0; i < repairsType.length; i++) {
-                      List price = [];
                       allRepairForPrice[i].forEach((element) {
-                        price.add(element.text.trim());
+                        List<int> eachp = [];
+                        eachp.add(int.parse(element.text.trim()));
+                        eachPrice.add(eachp);
                       });
-                      eachPrice.add(price);
-                      price.clear();
-                    }
-                    for (var k = 0; k < eachPrice.length; k++) {
-                      repairDoc[repairsType[k]] = eachPrice[k];
                     }
                   }
 
@@ -178,7 +190,8 @@ class _GarageFormState extends State<GarageForm> {
                     longitude,
                     vehicleTypes,
                     engineTypes,
-                    json.encode(repairDoc),
+                    repairsType,
+                    json.encode(eachPrice),
                     mediaOrig,
                     mediaThumb,
                     allTypesOfMedia,
@@ -648,7 +661,9 @@ class _GarageFormState extends State<GarageForm> {
                       open = value;
                     });
                   } else {
-                    close = value;
+                    setState(() {
+                      close = value;
+                    });
                   }
                 },
                 textAlign: TextAlign.center,
@@ -1505,8 +1520,12 @@ class _GarageFormState extends State<GarageForm> {
                                                           myData[index]
                                                               ['repair'],
                                                         )
-                                                            ? Colors.black
-                                                            : Colors.black38),
+                                                            ? Color.fromRGBO(
+                                                                129,
+                                                                165,
+                                                                168,
+                                                                1)
+                                                            : Colors.black),
                                                   )
                                                 ],
                                               ),
