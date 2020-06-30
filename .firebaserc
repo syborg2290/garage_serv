@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "garage-c21c4"
+    "default": "vehicelserv",
+    "staging": "vehicelserv"
   }
 }

@@ -29,31 +29,29 @@ Future<QuerySnapshot> garagesAll() async {
 }
 
 addAGarage(
-    String currentUserId,
-    String garageName,
-    String ownerName,
-    String ownerContactNumber,
-    String garageContactNumber,
-    double latitude,
-    double longitude,
-    dynamic vehicleTypes,
-    dynamic vehicleEngineType,
-    dynamic preferredRepair,
-    dynamic eachRepairPrice,
-    dynamic mediaOrig,
-    dynamic mediaThumb,
-    dynamic mediaTypes,
-    String garageAddress,
-    Timestamp openAt,
-    Timestamp closeAt,
-    dynamic closedDays) {
+  String currentUserId,
+  String garageName,
+  String garageContactNumber,
+  double latitude,
+  double longitude,
+  dynamic vehicleTypes,
+  dynamic vehicleEngineType,
+  dynamic preferredRepair,
+  dynamic eachRepairPrice,
+  dynamic mediaOrig,
+  dynamic mediaThumb,
+  dynamic mediaTypes,
+  String garageAddress,
+  Timestamp openAt,
+  Timestamp closeAt,
+  dynamic closedDays,
+  String currencyType,
+) {
   var uuid = Uuid();
   garageRef.add({
     "id": uuid.v1().toString() + new DateTime.now().toString(),
     "addedId": currentUserId,
     "garageName": garageName,
-    "owenerName": ownerName,
-    "ownerContactNumber": ownerContactNumber,
     "garageContactNumber": garageContactNumber,
     "garageAddress": garageAddress,
     "latitude": latitude,
@@ -62,6 +60,7 @@ addAGarage(
     "vehicleEngineType": vehicleEngineType,
     "preferredRepair": preferredRepair,
     "preferredRepairForPrice": eachRepairPrice,
+    "currencyType": currencyType,
     "mediaOrig": mediaOrig,
     "mediaThumb": mediaThumb,
     "mediaTypes": mediaTypes,
@@ -122,6 +121,6 @@ updateGarageRating(String garageId, double newRating, String currentUserId,
   final result =
       await garageRef.where('id', isEqualTo: garageId).getDocuments();
   Garage reGarage = Garage.fromDocument(result.documents[0]);
-  
+
   garageRef.document(docId).updateData({'ratings.$currentUserId': newRating});
 }

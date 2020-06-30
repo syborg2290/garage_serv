@@ -45,12 +45,14 @@ class _EditProfileState extends State<EditProfile> {
     username.text = widget.user.username;
     aboutYou.text = widget.user.aboutYou;
     phoneNumber.text = widget.user.contactNumber;
-    dobDateTime = widget.user.dob.toDate();
-    dob.text = widget.user.dob.toDate().year.toString() +
-        "-" +
-        widget.user.dob.toDate().month.toString() +
-        "-" +
-        widget.user.dob.toDate().day.toString();
+    dobDateTime = widget.user.dob != null ? widget.user.dob.toDate() : null;
+    dob.text = widget.user.dob != null
+        ? (widget.user.dob.toDate().year.toString() +
+            "-" +
+            widget.user.dob.toDate().month.toString() +
+            "-" +
+            widget.user.dob.toDate().day.toString())
+        : null;
     location.text = widget.user.location;
     pr = ProgressDialog(
       context,
@@ -476,9 +478,7 @@ class _EditProfileState extends State<EditProfile> {
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
-    // var orientation = MediaQuery.of(context).orientation;
-    // print((width * 0.6).round());
-    // print((height * 0.302).round());
+
     SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(statusBarColor: Colors.transparent));
     return Scaffold(

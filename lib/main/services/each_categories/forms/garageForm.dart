@@ -41,9 +41,7 @@ class _GarageFormState extends State<GarageForm> {
   double latitude;
   double longitude;
   TextEditingController garageName = TextEditingController();
-  TextEditingController ownerName = TextEditingController();
   TextEditingController garagePhone = TextEditingController();
-  TextEditingController ownerContactNumber = TextEditingController();
   TextEditingController openController = TextEditingController();
   TextEditingController closeController = TextEditingController();
   TextEditingController garageAddress = TextEditingController();
@@ -130,107 +128,99 @@ class _GarageFormState extends State<GarageForm> {
 
   done() async {
     if (garageName.text.trim() != "") {
-      if (ownerName.text.trim() != "") {
-        if (garagePhone.text.trim() != "" ||
-            ownerContactNumber.text.trim() != "") {
-          if (openController.text.trim() != "" &&
-              closeController.text.trim() != "") {
-            if (garageAddress.text.trim() != "") {
-              if (latitude != null && longitude != null) {
-                pr.show();
-                QuerySnapshot snap =
-                    await checkGarageNameAlreadyExist(garageName.text.trim());
-                if (snap.documents.isEmpty) {
-                  List mediaOrig = [];
-                  List<List<int>> eachPrice = [];
-                  List mediaThumb = [];
-                  List allTypesOfMedia = [];
+      if (garagePhone.text.trim() != "") {
+        if (openController.text.trim() != "" &&
+            closeController.text.trim() != "") {
+          if (garageAddress.text.trim() != "") {
+            if (latitude != null && longitude != null) {
+              pr.show();
+              QuerySnapshot snap =
+                  await checkGarageNameAlreadyExist(garageName.text.trim());
+              if (snap.documents.isEmpty) {
+                List mediaOrig = [];
+                Map<String, List<int>> eachPrice = {};
+                List mediaThumb = [];
+                List allTypesOfMedia = [];
 
-                  if (repairsType.isNotEmpty) {
-                    for (var i = 0; i < repairsType.length; i++) {
-                      allRepairForPrice[i].forEach((element) {
-                        List<int> eachp = [];
-                        eachp.add(int.parse(element.text.trim()));
-                        eachPrice.add(eachp);
-                      });
-                    }
+                if (repairsType.isNotEmpty) {
+                  for (var i = 0; i < repairsType.length; i++) {
+                    allRepairForPrice[i].forEach((element) {
+                      List<int> eachp = [];
+                      eachp.add(int.parse(element.text.trim()));
+                      eachPrice[repairsType[i]] = eachp;
+                    });
                   }
-
-                  if (media.isNotEmpty) {
-                    for (var j = 0; j < media.length; j++) {
-                      if (mediaType[j] == "image") {
-                        String downUrl = await uploadImageToGarage(
-                            await compressImageFile(media[j], 90));
-                        mediaOrig.add(downUrl);
-                        String downThumbImageUrl =
-                            await uploadThumbImageToGarage(
-                                await getThumbnailForImage(media[j], 45));
-                        mediaThumb.add(downThumbImageUrl);
-                        allTypesOfMedia.add("image");
-                      } else {
-                        String downVideoUrl = await uploadVideoToGarage(
-                            await compressVideoFile(media[j]));
-                        mediaOrig.add(downVideoUrl);
-                        String downThumbVideoUrl =
-                            await uploadThumbVideoToGarage(
-                                await getThumbnailForVideo(media[j]));
-                        mediaThumb.add(downThumbVideoUrl);
-                        allTypesOfMedia.add("video");
-                      }
-                    }
-                  }
-
-                  addAGarage(
-                    widget.currentUser.id,
-                    garageName.text.trim(),
-                    ownerName.text.trim(),
-                    ownerContactNumber.text.trim(),
-                    garagePhone.text.trim(),
-                    latitude,
-                    longitude,
-                    vehicleTypes,
-                    engineTypes,
-                    repairsType,
-                    json.encode(eachPrice),
-                    mediaOrig,
-                    mediaThumb,
-                    allTypesOfMedia,
-                    garageAddress.text.trim(),
-                    Timestamp.fromDate(open),
-                    Timestamp.fromDate(close),
-                    closingDays,
-                  );
-
-                  pr.hide().whenComplete(() {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => Garages(
-                                  currentUser: widget.currentUser,
-                                )));
-                  });
-                } else {
-                  pr.hide();
-                  GradientSnackBar.showMessage(
-                      context, "Provided name for the garage is already in!");
                 }
+
+                if (media.isNotEmpty) {
+                  for (var j = 0; j < media.length; j++) {
+                    if (mediaType[j] == "image") {
+                      String downUrl = await uploadImageToGarage(
+                          await compressImageFile(media[j], 90));
+                      mediaOrig.add(downUrl);
+                      String downThumbImageUrl = await uploadThumbImageToGarage(
+                          await getThumbnailForImage(media[j], 45));
+                      mediaThumb.add(downThumbImageUrl);
+                      allTypesOfMedia.add("image");
+                    } else {
+                      String downVideoUrl = await uploadVideoToGarage(
+                          await compressVideoFile(media[j]));
+                      mediaOrig.add(downVideoUrl);
+                      String downThumbVideoUrl = await uploadThumbVideoToGarage(
+                          await getThumbnailForVideo(media[j]));
+                      mediaThumb.add(downThumbVideoUrl);
+                      allTypesOfMedia.add("video");
+                    }
+                  }
+                }
+
+                addAGarage(
+                  widget.currentUser.id,
+                  garageName.text.trim(),
+                  garagePhone.text.trim(),
+                  latitude,
+                  longitude,
+                  vehicleTypes,
+                  engineTypes,
+                  repairsType,
+                  json.encode(eachPrice),
+                  mediaOrig,
+                  mediaThumb,
+                  allTypesOfMedia,
+                  garageAddress.text.trim(),
+                  Timestamp.fromDate(open),
+                  Timestamp.fromDate(close),
+                  closingDays,
+                  currentCurrencyType,
+                );
+
+                pr.hide().whenComplete(() {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Garages(
+                                currentUser: widget.currentUser,
+                              )));
+                });
               } else {
+                pr.hide();
                 GradientSnackBar.showMessage(
-                    context, "Provide location for the garage!");
+                    context, "Provided name for the garage is already in!");
               }
             } else {
               GradientSnackBar.showMessage(
-                  context, "Provide current address for the garage!");
+                  context, "Provide location for the garage!");
             }
           } else {
-            GradientSnackBar.showMessage(context, "Provide open & close time!");
+            GradientSnackBar.showMessage(
+                context, "Provide current address for the garage!");
           }
         } else {
-          GradientSnackBar.showMessage(
-              context, "Provide contact number of garage or owner!");
+          GradientSnackBar.showMessage(context, "Provide open & close time!");
         }
       } else {
-        GradientSnackBar.showMessage(context, "Provide name of the owner!");
+        GradientSnackBar.showMessage(
+            context, "Provide contact number of garage!");
       }
     } else {
       GradientSnackBar.showMessage(context, "Provide name for the garage!");
@@ -1180,12 +1170,8 @@ class _GarageFormState extends State<GarageForm> {
               ),
               conatinerOfTextField(
                   width, height, "Garage name", garageName, 1, false, false),
-              conatinerOfTextField(
-                  width, height, "Owner name", ownerName, 1, false, false),
               conatinerOfTextField(width, height, "Garage contact number",
                   garagePhone, 1, false, true),
-              conatinerOfTextField(width, height, "Owner contact number",
-                  ownerContactNumber, 1, false, true),
               SizedBox(
                 height: 20,
               ),

@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:garage/main/main_pages/sub/edit_profile.dart';
 import 'package:garage/models/user.dart';
 import 'package:garage/services/database/userStuff.dart';
+import 'package:garage/utils/palette.dart';
+import 'package:progressive_image/progressive_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:garage/initials/home.dart';
 import 'package:garage/utils/shimmers/profile_shimmers.dart';
@@ -22,6 +24,7 @@ class _ProfileState extends State<Profile> {
   int followers = 0;
   String currentUserId;
   User currentUser;
+  bool isFollow = false;
 
   @override
   void initState() {
@@ -155,6 +158,23 @@ class _ProfileState extends State<Profile> {
               } else {
                 User user = User.fromDocument(snapshot.data.documents[0]);
 
+                checkIfFollowingSe(widget.profileId, currentUserId)
+                    .then((value) {
+                  if (value.exists) {
+                    isFollow = true;
+                  } else {
+                    isFollow = false;
+                  }
+                });
+
+                getFollowersSe(widget.profileId).then((value) {
+                  followers = value.documents.length;
+                });
+
+                getFollowingSe(widget.profileId).then((value) {
+                  following = value.documents.length;
+                });
+
                 return SingleChildScrollView(
                   child: Container(
                     padding: EdgeInsets.fromLTRB(
@@ -196,20 +216,28 @@ class _ProfileState extends State<Profile> {
                                       shape: BoxShape.circle,
                                     ),
                                     child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(70.0),
-                                      child: user.thumbnailUserPhotoUrl == null
-                                          ? Image.asset(
-                                              'assets/Icons/user.png',
-                                              width: width * 0.38,
-                                              height: height * 0.2,
-                                            )
-                                          : Image.network(
-                                              user.thumbnailUserPhotoUrl,
-                                              width: width * 0.38,
-                                              height: height * 0.2,
-                                              fit: BoxFit.cover,
-                                            ),
-                                    ),
+                                        borderRadius:
+                                            BorderRadius.circular(70.0),
+                                        child: user.thumbnailUserPhotoUrl ==
+                                                null
+                                            ? Image.asset(
+                                                'assets/Icons/user.png',
+                                                width: width * 0.38,
+                                                height: height * 0.2,
+                                              )
+                                            : ProgressiveImage(
+                                                placeholder: AssetImage(
+                                                    'assets/Icons/user.png'),
+                                                // size: 1.87KB
+                                                thumbnail: NetworkImage(
+                                                    user.thumbnailUserPhotoUrl),
+                                                // size: 1.29MB
+                                                image: NetworkImage(
+                                                    user.thumbnailUserPhotoUrl),
+                                                width: width * 0.38,
+                                                height: height * 0.2,
+                                                fit: BoxFit.cover,
+                                              )),
                                   ),
                                 ),
                               ],
@@ -265,6 +293,42 @@ class _ProfileState extends State<Profile> {
                                     ),
                                   ),
                                 ],
+                              ),
+                        user.id == currentUserId
+                            ? SizedBox.shrink()
+                            : SizedBox(
+                                width: width * 0.8,
+                                child: FlatButton(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        isFollow ? "Follow" : "Unfollow",
+                                        style: TextStyle(
+                                          fontSize: 17,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      if (isFollow) {
+                                        handleUnfollowUserSe(
+                                          widget.profileId,
+                                          currentUserId,
+                                        );
+                                        isFollow = false;
+                                      } else {
+                                        handleFollowUserSe(
+                                            widget.profileId,
+                                            currentUserId,
+                                            user.username,
+                                            user.thumbnailUserPhotoUrl);
+                                        isFollow = true;
+                                      }
+                                    },
+                                    color: Palette.appColor,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20.0),
+                                    )),
                               ),
                         SizedBox(
                           height: 10,

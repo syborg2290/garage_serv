@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:garage/config/collections.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 
 Future<QuerySnapshot> usernameCheckSe(String username) async {
   final result =
@@ -119,4 +120,101 @@ Future<String> uploadImageProfilePicThumbnail(
 
 updateProfile(String userId, dynamic obj) {
   userRef.document(userId).updateData(obj);
+}
+
+Future<DocumentSnapshot> checkIfFollowingSe(
+    String profileId, String currentUserId) async {
+  DocumentSnapshot doc = await followersRef
+      .document(profileId)
+      .collection('userFollowers')
+      .document(currentUserId)
+      .get();
+
+  return doc;
+}
+
+Future<QuerySnapshot> getFollowersSe(String profileId) async {
+  QuerySnapshot snapshot = await followersRef
+      .document(profileId)
+      .collection('userFollowers')
+      .getDocuments();
+  return snapshot;
+}
+
+Future<QuerySnapshot> getFollowingSe(String profileId) async {
+  QuerySnapshot snapshot = await followingRef
+      .document(profileId)
+      .collection('userFollowing')
+      .getDocuments();
+  return snapshot;
+}
+
+handleUnfollowUserSe(String profileId, String currentUserId) {
+  //followers deleted
+  followersRef
+      .document(profileId)
+      .collection('userFollowers')
+      .document(currentUserId)
+      .get()
+      .then((doc) {
+    if (doc.exists) {
+      doc.reference.delete();
+    }
+  });
+  //following deleted
+  followingRef
+      .document(currentUserId)
+      .collection('userFollowing')
+      .document(profileId)
+      .get()
+      .then((doc) {
+    if (doc.exists) {
+      doc.reference.delete();
+    }
+  });
+
+  //remove activity feed
+  activityFeedRef
+      .document(profileId)
+      .collection('feedItems')
+      .document(currentUserId)
+      .get()
+      .then((doc) {
+    if (doc.exists) {
+      doc.reference.delete();
+    }
+  });
+}
+
+handleFollowUserSe(String profileId, String currentUserId,
+    String currentUsername, String currentPhotoUrl) {
+  //followers update
+  followersRef
+      .document(profileId)
+      .collection('userFollowers')
+      .document(currentUserId)
+      .setData({});
+  //following update
+  followingRef
+      .document(currentUserId)
+      .collection('userFollowing')
+      .document(profileId)
+      .setData({});
+
+  var uuid = Uuid();
+  //add activity feed
+  activityFeedRef
+      .document(profileId)
+      .collection('feedItems')
+      .document(currentUserId)
+      .setData({
+    "id": uuid.v1().toString() + new DateTime.now().toString(),
+    "userId": currentUserId,
+    "username": currentUsername,
+    "userProfileImage": currentPhotoUrl,
+    "type": "follow",
+    "typeId": profileId,
+    "read": false,
+    "timestamp": timestamp,
+  });
 }

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:animator/animator.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,6 +14,7 @@ import 'package:garage/models/user.dart';
 import 'package:garage/services/database/userStuff.dart';
 import 'package:garage/utils/palette.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:garage/utils/progress_bars.dart';
 
 class AuthScreen extends StatefulWidget {
   AuthScreen({Key key}) : super(key: key);
@@ -30,6 +32,7 @@ class _AuthScreenState extends State<AuthScreen> {
   Brightness bottomBrightness = Brightness.light;
   FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -66,6 +69,7 @@ class _AuthScreenState extends State<AuthScreen> {
     setState(() {
       currentUser = currentUserObj;
       currentUserId = pref.getString('userid');
+      isLoading = false;
     });
   }
 
@@ -150,134 +154,163 @@ class _AuthScreenState extends State<AuthScreen> {
     final height = MediaQuery.of(context).size.height;
     SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(statusBarColor: Colors.transparent));
-    return Scaffold(
-        backgroundColor: Colors.white,
-        body: Container(
-          width: width,
-          height: height,
-          child: PageView(
-            allowImplicitScrolling: true,
-            children: <Widget>[
-              Timeline(
-                currentUser: currentUser,
+    return WillPopScope(
+      onWillPop: () async {
+        AwesomeDialog(
+          context: context,
+          animType: AnimType.SCALE,
+          dialogType: DialogType.NO_HEADER,
+          body: Center(
+            child: Text(
+              'Are you sure ' + currentUser.firstname + '?',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 20,
               ),
-              ActivityFeed(
-                currentUser: currentUser,
-              ),
-              Find(
-                currentUser: currentUser,
-              ),
-              Profile(
-                profileId: currentUserId,
-              ),
-            ],
-            controller: pageController,
-            onPageChanged: onPageChanged,
-            physics: NeverScrollableScrollPhysics(),
+            ),
           ),
-        ),
-        //floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: ClipOval(
-          child: FloatingActionButton(
-            backgroundColor: Colors.white,
-            elevation: 9.0,
-            highlightElevation: 9.0,
-            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            heroTag: "hero1",
-            child: Animator(
-              duration: Duration(milliseconds: 1000),
-              tween: Tween(begin: 1.4, end: 1.5),
-              curve: Curves.bounceIn,
-              cycles: 0,
-              builder: (Animation<double> anim) => Transform.scale(
-                scale: anim.value,
-                child: Image.asset(
-                  'assets/Icons/add.png',
-                  color: Colors.red,
-                  width: 36,
-                  height: 36,
+          btnOkText: 'Yes',
+          btnCancelText: 'No',
+          btnOkOnPress: () {
+            exit(0);
+          },
+          btnCancelOnPress: () {},
+        )..show();
+        return false;
+      },
+      child: Scaffold(
+          backgroundColor: Colors.white,
+          body: isLoading
+              ? Center(child: circularProgress())
+              : Container(
+                  width: width,
+                  height: height,
+                  child: PageView(
+                    allowImplicitScrolling: true,
+                    children: <Widget>[
+                      Timeline(
+                        currentUser: currentUser,
+                      ),
+                      ActivityFeed(
+                        currentUser: currentUser,
+                      ),
+                      Find(
+                        currentUser: currentUser,
+                      ),
+                      Profile(
+                        profileId: currentUserId,
+                      ),
+                    ],
+                    controller: pageController,
+                    onPageChanged: onPageChanged,
+                    physics: NeverScrollableScrollPhysics(),
+                  ),
                 ),
-              ),
-            ),
-            onPressed: () {},
-          ),
-        ),
-        bottomNavigationBar: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-                topRight: Radius.circular(40), topLeft: Radius.circular(40)),
-            boxShadow: [
-              BoxShadow(color: Colors.black38, spreadRadius: 0, blurRadius: 10),
-            ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(40.0),
-              topRight: Radius.circular(40.0),
-            ),
-            child: BottomAppBar(
-              shape: CircularNotchedRectangle(),
-              notchMargin: 6.0,
+          //floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
+          floatingActionButton: ClipOval(
+            child: FloatingActionButton(
+              backgroundColor: Colors.white,
               elevation: 9.0,
-              clipBehavior: Clip.antiAlias,
-              child: Container(
-                height: 55,
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    IconButton(
-                      iconSize: pageIndex == 0 ? 40.0 : 30.0,
-                      padding: EdgeInsets.only(left: 28.0),
-                      icon: Image(
-                        image: AssetImage("assets/Icons/main-page.png"),
-                        color: pageIndex == 0 ? Colors.black : Colors.black54,
+              highlightElevation: 9.0,
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              heroTag: "hero1",
+              child: Animator(
+                duration: Duration(milliseconds: 1000),
+                tween: Tween(begin: 1.4, end: 1.5),
+                curve: Curves.bounceIn,
+                cycles: 0,
+                builder: (Animation<double> anim) => Transform.scale(
+                  scale: anim.value,
+                  child: Image.asset(
+                    'assets/Icons/add.png',
+                    color: Colors.black54,
+                    width: 36,
+                    height: 36,
+                  ),
+                ),
+              ),
+              onPressed: () {},
+            ),
+          ),
+          bottomNavigationBar: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(40), topLeft: Radius.circular(40)),
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black38, spreadRadius: 0, blurRadius: 10),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(40.0),
+                topRight: Radius.circular(40.0),
+              ),
+              child: BottomAppBar(
+                shape: CircularNotchedRectangle(),
+                notchMargin: 6.0,
+                elevation: 9.0,
+                clipBehavior: Clip.antiAlias,
+                child: Container(
+                  height: 55,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      IconButton(
+                        iconSize: pageIndex == 0 ? 40.0 : 30.0,
+                        padding: EdgeInsets.only(left: 28.0),
+                        icon: Image(
+                          image: AssetImage("assets/Icons/main-page.png"),
+                          color: pageIndex == 0 ? Colors.black : Colors.black54,
+                        ),
+                        onPressed: () {
+                          onTap(0);
+                        },
                       ),
-                      onPressed: () {
-                        onTap(0);
-                      },
-                    ),
-                    IconButton(
-                      iconSize: pageIndex == 1 ? 40.0 : 30.0,
-                      padding: EdgeInsets.only(right: 28.0),
-                      icon: Image(
-                        image: AssetImage("assets/Icons/notification.png"),
-                        color: pageIndex == 1 ? Colors.black : Colors.black54,
+                      IconButton(
+                        iconSize: pageIndex == 1 ? 40.0 : 30.0,
+                        padding: EdgeInsets.only(right: 28.0),
+                        icon: Image(
+                          image: AssetImage("assets/Icons/notification.png"),
+                          color: pageIndex == 1 ? Colors.black : Colors.black54,
+                        ),
+                        onPressed: () {
+                          onTap(1);
+                        },
                       ),
-                      onPressed: () {
-                        onTap(1);
-                      },
-                    ),
-                    IconButton(
-                      iconSize: pageIndex == 2 ? 40.0 : 30.0,
-                      padding: EdgeInsets.only(left: 28.0),
-                      icon: Image(
-                        image: AssetImage("assets/Icons/search.png"),
-                        color: pageIndex == 2 ? Colors.black : Colors.black54,
+                      IconButton(
+                        iconSize: pageIndex == 2 ? 40.0 : 30.0,
+                        padding: EdgeInsets.only(left: 28.0),
+                        icon: Image(
+                          image: AssetImage("assets/Icons/search.png"),
+                          color: pageIndex == 2 ? Colors.black : Colors.black54,
+                        ),
+                        onPressed: () {
+                          onTap(2);
+                        },
                       ),
-                      onPressed: () {
-                        onTap(2);
-                      },
-                    ),
-                    IconButton(
-                      iconSize: pageIndex == 3 ? 40.0 : 30.0,
-                      padding: EdgeInsets.only(right: 28.0),
-                      icon: Image(
-                        image: AssetImage("assets/Icons/person.png"),
-                        color: pageIndex == 3 ? Colors.black : Colors.black54,
-                      ),
-                      onPressed: () {
-                        onTap(3);
-                      },
-                    )
-                  ],
+                      IconButton(
+                        iconSize: pageIndex == 3 ? 40.0 : 30.0,
+                        padding: EdgeInsets.only(right: 28.0),
+                        icon: Image(
+                          image: AssetImage("assets/Icons/person.png"),
+                          color: pageIndex == 3 ? Colors.black : Colors.black54,
+                        ),
+                        onPressed: () {
+                          onTap(3);
+                        },
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ));
+          )),
+    );
   }
 
   @override

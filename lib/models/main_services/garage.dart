@@ -4,8 +4,6 @@ class Garage {
   final String id;
   final String addedId;
   final String garageName;
-  final String owenerName;
-  final String ownerContactNumber;
   final String garageContactNumber;
   final String garageAddress;
   final double latitude;
@@ -14,6 +12,7 @@ class Garage {
   final dynamic vehicleEngineType;
   final dynamic preferredRepair;
   final dynamic preferredRepairForPrice;
+  final String currencyType;
   final dynamic mediaOrig;
   final dynamic mediaThumb;
   final dynamic mediaTypes;
@@ -27,8 +26,6 @@ class Garage {
       {this.id,
       this.addedId,
       this.garageName,
-      this.owenerName,
-      this.ownerContactNumber,
       this.garageContactNumber,
       this.garageAddress,
       this.latitude,
@@ -37,6 +34,7 @@ class Garage {
       this.vehicleEngineType,
       this.preferredRepair,
       this.preferredRepairForPrice,
+      this.currencyType,
       this.mediaOrig,
       this.mediaThumb,
       this.mediaTypes,
@@ -51,8 +49,6 @@ class Garage {
         id: doc["id"],
         addedId: doc['addedId'],
         garageName: doc['garageName'],
-        owenerName: doc['owenerName'],
-        ownerContactNumber: doc['ownerContactNumber'],
         garageContactNumber: doc['garageContactNumber'],
         garageAddress: doc['garageAddress'],
         latitude: doc['latitude'],
@@ -61,6 +57,7 @@ class Garage {
         vehicleEngineType: doc['vehicleEngineType'],
         preferredRepair: doc['preferredRepair'],
         preferredRepairForPrice: doc['preferredRepairForPrice'],
+        currencyType: doc['currencyType'],
         mediaOrig: doc['mediaOrig'],
         mediaThumb: doc['mediaThumb'],
         mediaTypes: doc['mediaTypes'],

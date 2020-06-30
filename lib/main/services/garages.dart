@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:empty_widget/empty_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -44,10 +45,10 @@ class _GaragesState extends State<Garages> {
   StreamSubscription _locationSubscription;
   List<LatLng> polylineCoordinates = [];
   PolylinePoints polylinePoints = PolylinePoints();
-  double allRating = 0;
-  double currentRating = 0;
+  double allRating = 0.0;
+  double currentRating = 0.0;
   Garage snapGarage;
-  double distance = 0;
+  double distance = 0.0;
 
   @override
   void initState() {
@@ -285,56 +286,79 @@ class _GaragesState extends State<Garages> {
     super.didUpdateWidget(oldWidget);
   }
 
+  Widget vehicleTech(String type, String imagePath, bool isContain) {
+    return Container(
+      width: 100,
+      height: 100,
+      child: Card(
+        clipBehavior: Clip.antiAliasWithSaveLayer,
+        child: Container(
+          color: isContain ? Palette.appColor : Colors.white,
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.all(10),
+                child: Column(
+                  children: <Widget>[
+                    Image.asset(
+                      imagePath,
+                      width: 40,
+                      height: 40,
+                      color: Colors.black,
+                    ),
+                    Text(
+                      type,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+        elevation: 5,
+        margin: EdgeInsets.all(10),
+      ),
+    );
+  }
+
   pinBottomSheet(Garage garage, String docId, bool isAvailable) async {
+    // String jsonGarage =
+    //     await rootBundle.loadString('assets/json/garage_vehicles.json');
+    // List jsonParsedGarage = jsonDecode(jsonGarage);
+
     return showModalBottomSheet(
             backgroundColor: Colors.transparent,
             elevation: 0.0,
             useRootNavigator: true,
             clipBehavior: Clip.hardEdge,
             enableDrag: true,
+            isScrollControlled: true,
             context: context,
             builder: (BuildContext bc) {
               return StatefulBuilder(
                   builder: (BuildContext context, StateSetter state) {
                 return StreamBuilder(
-                    stream: streamingSingleGarage(garage.id),
+                    stream: streamingGarage(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        snapGarage =
-                            Garage.fromDocument(snapshot.data.documents[0]);
+                        snapshot.data.documents.forEach((doc) {
+                          Garage snapDoc = Garage.fromDocument(doc);
+                          if (snapDoc.id == garage.id) {
+                            snapGarage = snapDoc;
+                          }
+                        });
 
                         if (snapGarage.ratings != null) {
                           snapGarage.ratings.forEach((key, value) {
-                            if (allRating >= 1 && allRating <= 10) {
-                              allRating = (allRating + value) / 10;
-                            }
-                            if (allRating > 10 && allRating <= 100) {
-                              allRating = (allRating + value) / 100;
-                            }
-                            if (allRating > 100 && allRating <= 1000) {
-                              allRating = (allRating + value) / 1000;
-                            }
-
-                            if (allRating > 1000 && allRating <= 10000) {
-                              allRating = (allRating + value) / 10000;
-                            }
-
-                            if (allRating > 10000 && allRating <= 100000) {
-                              allRating = (allRating + value) / 100000;
-                            }
-
-                            if (allRating > 100000 && allRating <= 1000000) {
-                              allRating = (allRating + value) / 1000000;
-                            }
-
-                            if (allRating > 1000000 && allRating <= 10000000) {
-                              allRating = (allRating + value) / 10000000;
-                            }
-
-                            if (allRating > 10000000 &&
-                                allRating <= 100000000) {
-                              allRating = (allRating + value) / 100000000;
-                            }
+                            allRating = allRating + value;
                           });
                         }
                         if (snapGarage.ratings != null) {
@@ -360,228 +384,538 @@ class _GaragesState extends State<Garages> {
                         });
                       }
 
-                      return Container(
-                        decoration: new BoxDecoration(
-                            color: Colors
-                                .white, //new Color.fromRGBO(255, 0, 0, 0.0),
-                            borderRadius: new BorderRadius.only(
-                                topLeft: const Radius.circular(50.0),
-                                topRight: const Radius.circular(50.0))),
-                        padding: EdgeInsets.only(
-                          left: 40,
-                          right: 40,
-                          bottom: 3,
-                          top: 30,
-                        ),
-                        child: new Wrap(
-                          children: <Widget>[
-                            Column(
-                              children: <Widget>[
-                                Center(
-                                    child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: <Widget>[
-                                    Icon(Icons.near_me, size: 27),
-                                    Text(
-                                      garage.garageName,
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 25,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    ((distance / 1000).round()) < 1
-                                        ? Text(
-                                            '${(distance).round()}' + " M",
-                                            style: TextStyle(
-                                              color: Colors.black54,
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          )
-                                        : Text(
-                                            '${(distance / 1000).round()}' +
-                                                " Km",
-                                            style: TextStyle(
-                                              color: Colors.black54,
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                  ],
-                                )),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    Icon(Icons.location_on, size: 20),
-                                    Text(
-                                      garage.garageAddress,
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(fontSize: 18),
-                                    ),
-                                  ],
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(4.0),
-                                  child: Chip(
-                                    label: isAvailable
-                                        ? Text(
-                                            "Open",
-                                            style: TextStyle(
-                                                fontSize: 20,
-                                                color: Colors.white),
-                                          )
-                                        : Text(
-                                            "Close",
-                                            style: TextStyle(
-                                                fontSize: 20,
-                                                color: Colors.white),
-                                          ),
-                                    backgroundColor: isAvailable
-                                        ? Color(0xff39b54a)
-                                        : Colors.red,
+                      if (allRating >= 1 && allRating <= 10) {
+                        allRating = (allRating) / 10;
+                      }
+                      if (allRating > 10 && allRating <= 100) {
+                        allRating = (allRating) / 100;
+                      }
+                      if (allRating > 100 && allRating <= 1000) {
+                        allRating = (allRating) / 1000;
+                      }
+
+                      if (allRating > 1000 && allRating <= 10000) {
+                        allRating = (allRating) / 10000;
+                      }
+
+                      if (allRating > 10000 && allRating <= 100000) {
+                        allRating = (allRating) / 100000;
+                      }
+
+                      if (allRating > 100000 && allRating <= 1000000) {
+                        allRating = (allRating) / 1000000;
+                      }
+
+                      if (allRating > 1000000 && allRating <= 10000000) {
+                        allRating = (allRating) / 10000000;
+                      }
+
+                      if (allRating > 10000000 && allRating <= 100000000) {
+                        allRating = (allRating) / 100000000;
+                      }
+
+                      return SingleChildScrollView(
+                        child: Container(
+                          decoration: new BoxDecoration(
+                              color: Colors
+                                  .white, //new Color.fromRGBO(255, 0, 0, 0.0),
+                              borderRadius: new BorderRadius.only(
+                                  topLeft: const Radius.circular(50.0),
+                                  topRight: const Radius.circular(50.0))),
+                          padding: EdgeInsets.only(
+                            left: 40,
+                            right: 40,
+                            bottom: 3,
+                            top: 30,
+                          ),
+                          child: new Wrap(
+                            children: <Widget>[
+                              Column(
+                                children: <Widget>[
+                                  SizedBox(
+                                    height: 20,
                                   ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(2.0),
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                  Center(
+                                      child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
                                     children: <Widget>[
-                                      GestureDetector(
-                                        onTap: () async {},
-                                        child: Container(
-                                          margin: const EdgeInsets.all(15.0),
-                                          padding: const EdgeInsets.all(15.0),
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              border: Border.all(
-                                                  color: Colors.black)),
-                                          child: Row(
-                                            children: <Widget>[
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(2.0),
-                                                child: Text("know more",
-                                                    style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    )),
-                                              ),
-                                              Icon(
-                                                Icons.forward,
-                                                size: 30,
-                                              )
-                                            ],
-                                          ),
+                                      Icon(Icons.near_me),
+                                      Text(
+                                        garage.garageName,
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.bold,
                                         ),
+                                      ),
+                                      IconButton(
+                                          icon: Icon(
+                                            Icons.close,
+                                            size: 30,
+                                            color: Colors.black,
+                                          ),
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          }),
+                                    ],
+                                  )),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Icon(Icons.location_on, size: 20),
+                                      Text(
+                                        garage.garageAddress,
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(fontSize: 18),
                                       ),
                                     ],
                                   ),
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Text(
-                                  "Rate the " + garage.garageName,
-                                  style: TextStyle(fontSize: 18),
-                                ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                Column(
-                                  children: <Widget>[
-                                    Row(
+                                  ((distance / 1000).round()) < 1
+                                      ? Text(
+                                          '( ${(distance).round()}' + " M )",
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        )
+                                      : Text(
+                                          '( ${(distance / 1000).round()}' +
+                                              " Km )",
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Icon(Icons.phone, size: 20),
+                                      Text(
+                                        garage.garageContactNumber,
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(fontSize: 18),
+                                      ),
+                                    ],
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Chip(
+                                      label: isAvailable
+                                          ? Text(
+                                              "Open now",
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.white),
+                                            )
+                                          : Text(
+                                              "Close now",
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.white),
+                                            ),
+                                      backgroundColor: isAvailable
+                                          ? Color(0xff39b54a)
+                                          : Colors.red,
+                                    ),
+                                  ),
+                                  snapGarage != null
+                                      ? snapGarage.vehicleEngineType != null
+                                          ? SizedBox(
+                                              height: 100,
+                                              child: ListView(
+                                                scrollDirection:
+                                                    Axis.horizontal,
+                                                children: <Widget>[
+                                                  vehicleTech(
+                                                      "Any",
+                                                      "assets/Icons/any.png",
+                                                      snapGarage
+                                                          .vehicleEngineType
+                                                          .contains("Any")),
+                                                  vehicleTech(
+                                                      "None h/e",
+                                                      "assets/Icons/none.png",
+                                                      snapGarage
+                                                          .vehicleEngineType
+                                                          .contains(
+                                                              "None hybrid/electric")),
+                                                  vehicleTech(
+                                                      "Hybrid",
+                                                      "assets/Icons/hybrid.png",
+                                                      snapGarage
+                                                          .vehicleEngineType
+                                                          .contains("Hybrid")),
+                                                  vehicleTech(
+                                                      "Electric",
+                                                      "assets/Icons/electric.png",
+                                                      snapGarage
+                                                          .vehicleEngineType
+                                                          .contains(
+                                                              "Electric")),
+                                                ],
+                                              ),
+                                            )
+                                          : SizedBox.shrink()
+                                      : SizedBox.shrink(),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text(
+                                    "Repairing vehicle types of " +
+                                        garage.garageName,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 18),
+                                  ),
+                                  SizedBox(
+                                    height: 80,
+                                    child: ListView.builder(
+                                        itemCount:
+                                            snapGarage.vehiclesType.length,
+                                        scrollDirection: Axis.horizontal,
+                                        itemBuilder: (context, index) {
+                                          return Container(
+                                            width: 150,
+                                            height: 80,
+                                            child: Card(
+                                              clipBehavior:
+                                                  Clip.antiAliasWithSaveLayer,
+                                              child: Container(
+                                                color: Palette.appColor,
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Text(
+                                                    snapGarage
+                                                        .vehiclesType[index],
+                                                    textAlign: TextAlign.center,
+                                                    style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(20.0),
+                                              ),
+                                              elevation: 5,
+                                              margin: EdgeInsets.all(10),
+                                            ),
+                                          );
+                                        }),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  snapGarage.preferredRepair.length == 0
+                                      ? SizedBox.shrink()
+                                      : Text(
+                                          "Common repairs mentioned on" +
+                                              snapGarage.garageName,
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(fontSize: 18),
+                                        ),
+                                  snapGarage.preferredRepair.length == 0
+                                      ? SizedBox.shrink()
+                                      : SizedBox(
+                                          height: 150,
+                                          child: ListView.builder(
+                                              itemCount: snapGarage
+                                                  .preferredRepair.length,
+                                              scrollDirection: Axis.horizontal,
+                                              itemBuilder: (context, index) {
+                                                return GestureDetector(
+                                                  onTap: () {
+                                                    Map<String, List<int>>
+                                                        snapRepairPrice =
+                                                        json.decode(snapGarage
+                                                            .preferredRepairForPrice);
+                                                    AwesomeDialog(
+                                                      context: context,
+                                                      animType: AnimType.SCALE,
+                                                      dialogType:
+                                                          DialogType.NO_HEADER,
+                                                      body: SizedBox(
+                                                        height: 80,
+                                                        child: ListView.builder(
+                                                            itemCount: snapGarage
+                                                                .vehiclesType
+                                                                .length,
+                                                            scrollDirection:
+                                                                Axis.horizontal,
+                                                            itemBuilder:
+                                                                (context,
+                                                                    index2) {
+                                                              return Container(
+                                                                width: 150,
+                                                                height: 80,
+                                                                child: Card(
+                                                                  clipBehavior:
+                                                                      Clip.antiAliasWithSaveLayer,
+                                                                  child:
+                                                                      Container(
+                                                                    color: Palette
+                                                                        .appColor,
+                                                                    child:
+                                                                        Padding(
+                                                                      padding:
+                                                                          const EdgeInsets.all(
+                                                                              8.0),
+                                                                      child:
+                                                                          Column(
+                                                                        children: <
+                                                                            Widget>[
+                                                                          Text(
+                                                                            snapGarage.vehiclesType[index2],
+                                                                            textAlign:
+                                                                                TextAlign.center,
+                                                                            style:
+                                                                                TextStyle(
+                                                                              color: Colors.black,
+                                                                              fontSize: 16,
+                                                                              fontWeight: FontWeight.bold,
+                                                                            ),
+                                                                          ),
+                                                                          snapRepairPrice[snapGarage.preferredRepair[index]] == null
+                                                                              ? SizedBox.shrink()
+                                                                              : Text(
+                                                                                  snapRepairPrice[snapGarage.preferredRepair[index]][index2] == null ? "It's depend" : snapRepairPrice[snapGarage.preferredRepair[index]][index2],
+                                                                                  textAlign: TextAlign.center,
+                                                                                  style: TextStyle(
+                                                                                    color: Colors.black,
+                                                                                    fontSize: 16,
+                                                                                    fontWeight: FontWeight.bold,
+                                                                                  ),
+                                                                                ),
+                                                                        ],
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  shape:
+                                                                      RoundedRectangleBorder(
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            20.0),
+                                                                  ),
+                                                                  elevation: 5,
+                                                                  margin:
+                                                                      EdgeInsets
+                                                                          .all(
+                                                                              10),
+                                                                ),
+                                                              );
+                                                            }),
+                                                      ),
+                                                      btnOkText: 'Minimize',
+                                                    )..show();
+                                                  },
+                                                  child: Container(
+                                                    width: 150,
+                                                    height: 150,
+                                                    child: Card(
+                                                      clipBehavior: Clip
+                                                          .antiAliasWithSaveLayer,
+                                                      child: Container(
+                                                        color: Palette.appColor,
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child: Column(
+                                                            children: <Widget>[
+                                                              Text(
+                                                                snapGarage
+                                                                        .preferredRepair[
+                                                                    index],
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .center,
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: Colors
+                                                                      .black,
+                                                                  fontSize: 16,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                ),
+                                                              ),
+                                                              Image.asset(
+                                                                'assets/Icons/price.png',
+                                                                width: 40,
+                                                                height: 40,
+                                                                color: Colors
+                                                                    .black,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(20.0),
+                                                      ),
+                                                      elevation: 5,
+                                                      margin:
+                                                          EdgeInsets.all(10),
+                                                    ),
+                                                  ),
+                                                );
+                                              }),
+                                        ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(2.0),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceEvenly,
                                       children: <Widget>[
-                                        RatingBar(
-                                          onRatingChanged: (rating) async {
-                                            await updateGarageRating(
-                                                garage.id,
-                                                rating,
-                                                widget.currentUser.id,
-                                                docId);
-                                          },
-                                          filledIcon: Icons.sentiment_satisfied,
-                                          emptyIcon:
-                                              Icons.sentiment_dissatisfied,
-                                          halfFilledIcon:
-                                              Icons.sentiment_neutral,
-                                          isHalfAllowed: true,
-                                          filledColor: Colors.green,
-                                          emptyColor: Colors.redAccent,
-                                          halfFilledColor: Colors.amberAccent,
-                                          size: 48,
-                                          initialRating: currentRating,
-                                        ),
-                                        Text(" / " + allRating.toString(),
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 20,
-                                            )),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Divider(),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: <Widget>[
-                                        Column(
-                                          children: <Widget>[
-                                            Image.asset(
-                                              'assets/Icons/love.png',
-                                              width: 40,
-                                              height: 40,
+                                        GestureDetector(
+                                          onTap: () async {},
+                                          child: Container(
+                                            margin: const EdgeInsets.all(15.0),
+                                            padding: const EdgeInsets.all(15.0),
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                                border: Border.all(
+                                                    color: Colors.black)),
+                                            child: Row(
+                                              children: <Widget>[
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(2.0),
+                                                  child: Text("Images & Videos",
+                                                      style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 20,
+                                                      )),
+                                                ),
+                                                Icon(
+                                                  Icons.forward,
+                                                  size: 30,
+                                                )
+                                              ],
                                             ),
-                                            Text("0 likes"),
-                                          ],
-                                        ),
-                                        Column(
-                                          children: <Widget>[
-                                            Image.asset(
-                                              'assets/Icons/comment.png',
-                                              width: 40,
-                                              height: 40,
-                                            ),
-                                            Text("0 comments"),
-                                          ],
-                                        ),
-                                        Column(
-                                          children: <Widget>[
-                                            Image.asset(
-                                              'assets/Icons/share.png',
-                                              width: 40,
-                                              height: 40,
-                                            ),
-                                            Text("0 shares"),
-                                          ],
+                                          ),
                                         ),
                                       ],
                                     ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 20,
-                                ),
-                              ],
-                            ),
-                          ],
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text(
+                                    "Rate the " + snapGarage.garageName,
+                                    style: TextStyle(fontSize: 18),
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Column(
+                                    children: <Widget>[
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: <Widget>[
+                                          RatingBar(
+                                            onRatingChanged: (rating) async {
+                                              await updateGarageRating(
+                                                  garage.id,
+                                                  rating,
+                                                  widget.currentUser.id,
+                                                  docId);
+                                            },
+                                            filledIcon:
+                                                Icons.sentiment_satisfied,
+                                            emptyIcon:
+                                                Icons.sentiment_dissatisfied,
+                                            halfFilledIcon:
+                                                Icons.sentiment_neutral,
+                                            isHalfAllowed: true,
+                                            filledColor: Colors.green,
+                                            emptyColor: Colors.redAccent,
+                                            halfFilledColor: Colors.amberAccent,
+                                            size: 48,
+                                            initialRating: currentRating,
+                                          ),
+                                          Text(
+                                              " / " +
+                                                  (allRating.toStringAsFixed(2))
+                                                      .toString(),
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 20,
+                                              )),
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      Divider(),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: <Widget>[
+                                          Column(
+                                            children: <Widget>[
+                                              Image.asset(
+                                                'assets/Icons/love.png',
+                                                width: 40,
+                                                height: 40,
+                                              ),
+                                              Text("0 likes"),
+                                            ],
+                                          ),
+                                          Column(
+                                            children: <Widget>[
+                                              Image.asset(
+                                                'assets/Icons/comment.png',
+                                                width: 40,
+                                                height: 40,
+                                              ),
+                                              Text("0 comments"),
+                                            ],
+                                          ),
+                                          Column(
+                                            children: <Widget>[
+                                              Image.asset(
+                                                'assets/Icons/share.png',
+                                                width: 40,
+                                                height: 40,
+                                              ),
+                                              Text("0 shares"),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     });
@@ -750,13 +1084,6 @@ class _GaragesState extends State<Garages> {
                             flat: true,
                             draggable: false,
                             onTap: () async {
-                              // var _distanceInMeters =
-                              //     await Geolocator().distanceBetween(
-                              //   aGarage.latitude,
-                              //   aGarage.longitude,
-                              //   current.latitude,
-                              //   current.longitude,
-                              // );
                               await pinBottomSheet(
                                 aGarage,
                                 garageEle.documentID,
