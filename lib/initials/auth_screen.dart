@@ -124,7 +124,7 @@ class _AuthScreenState extends State<AuthScreen> {
         androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
     await flutterLocalNotificationsPlugin.show(
       0,
-      'Notification service of wlkmo',
+      'Notification service',
       message,
       platformChannelSpecifics,
       payload: 'Custom_Sound',

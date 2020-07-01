@@ -240,33 +240,6 @@ class _LocationState extends State<Location> {
                   zoomGesturesEnabled: true,
                   mapToolbarEnabled: false,
                 ),
-                Padding(
-                  padding: EdgeInsets.only(top: height * 0.1),
-                  child: Container(
-                    child: Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Align(
-                        alignment: Alignment.topRight,
-                        child: Column(
-                          children: <Widget>[
-                            SizedBox(
-                              height: 15.0,
-                            ),
-                            FloatingActionButton(
-                              backgroundColor: Palette.appColor,
-                              onPressed: _onMapTypeButtonPressed,
-                              child: Icon(
-                                Icons.map,
-                                color: Colors.black,
-                              ),
-                              heroTag: "btnMapType",
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
               ],
             ),
     );

@@ -203,11 +203,7 @@ handleFollowUserSe(String profileId, String currentUserId,
 
   var uuid = Uuid();
   //add activity feed
-  activityFeedRef
-      .document(profileId)
-      .collection('feedItems')
-      .document(currentUserId)
-      .setData({
+  activityFeedRef.document(profileId).collection('feedItems').add({
     "id": uuid.v1().toString() + new DateTime.now().toString(),
     "userId": currentUserId,
     "username": currentUsername,

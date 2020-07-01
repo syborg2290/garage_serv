@@ -144,11 +144,11 @@ class _GarageFormState extends State<GarageForm> {
 
                 if (repairsType.isNotEmpty) {
                   for (var i = 0; i < repairsType.length; i++) {
+                    List<int> eachp = [];
                     allRepairForPrice[i].forEach((element) {
-                      List<int> eachp = [];
                       eachp.add(int.parse(element.text.trim()));
-                      eachPrice[repairsType[i]] = eachp;
                     });
+                    eachPrice[repairsType[i]] = eachp;
                   }
                 }
 

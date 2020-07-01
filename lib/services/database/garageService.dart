@@ -1,10 +1,13 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:garage/config/collections.dart';
+import 'package:garage/models/activityFeed.dart';
 import 'package:garage/models/main_services/garage.dart';
 import 'package:uuid/uuid.dart';
+import 'package:path/path.dart' as Path;
 
 Future<QuerySnapshot> checkGarageNameAlreadyExist(String garageName) async {
   final result =
@@ -71,6 +74,25 @@ addAGarage(
   });
 }
 
+updateMediaForGarage(String garageId, String mediaOrig, String mediaThumb,
+    String type, String docId) async {
+  final result =
+      await garageRef.where('id', isEqualTo: garageId).getDocuments();
+  Garage gar = Garage.fromDocument(result.documents[0]);
+  List mediaOrigLi = gar.mediaOrig;
+  List mediaThumbLi = gar.mediaThumb;
+  List mediaTypesLi = gar.mediaTypes;
+  mediaOrigLi.add(mediaOrig);
+  mediaThumbLi.add(mediaThumb);
+  mediaTypesLi.add(type);
+
+  await garageRef.document(docId).updateData({
+    "mediaOrig": mediaOrigLi,
+    "mediaThumb": mediaThumbLi,
+    "mediaTypes": mediaTypesLi,
+  });
+}
+
 Future<String> uploadImageToGarage(File imageFile) async {
   var uuid = Uuid();
   String path = uuid.v1().toString() + new DateTime.now().toString();
@@ -123,4 +145,166 @@ updateGarageRating(String garageId, double newRating, String currentUserId,
   Garage reGarage = Garage.fromDocument(result.documents[0]);
 
   garageRef.document(docId).updateData({'ratings.$currentUserId': newRating});
+}
+
+removeMediaFromGarage(int index, String garageId, String docId) async {
+  final result =
+      await garageRef.where('id', isEqualTo: garageId).getDocuments();
+  Garage gar = Garage.fromDocument(result.documents[0]);
+
+  List mediaOrigLi = gar.mediaOrig;
+  List mediaThumbLi = gar.mediaThumb;
+  List mediaTypesLi = gar.mediaTypes;
+  mediaOrigLi.removeAt(index);
+  mediaThumbLi.removeAt(index);
+  mediaTypesLi.removeAt(index);
+
+  await garageRef.document(docId).updateData({
+    "mediaOrig": mediaOrigLi,
+    "mediaThumb": mediaThumbLi,
+    "mediaTypes": mediaTypesLi,
+  });
+}
+
+Future<void> deleteStorage(String imageFileUrl) async {
+  var fileUrl = Uri.decodeFull(Path.basename(imageFileUrl))
+      .replaceAll(new RegExp(r'(\?alt).*'), '');
+
+  final StorageReference firebaseStorageRef =
+      FirebaseStorage.instance.ref().child(fileUrl);
+  await firebaseStorageRef.delete();
+}
+
+likesToGarage(String docId, String garageId, String currentUserId,
+    String addedId, String username, String userImage) async {
+  final result =
+      await garageRef.where('id', isEqualTo: garageId).getDocuments();
+  Garage gar = Garage.fromDocument(result.documents[0]);
+  List likes = [];
+
+  if (gar.likes != null) {
+    likes = gar.likes;
+  }
+  if (likes == null) {
+    likes.add(currentUserId);
+    if (addedId != currentUserId) {
+      await likeAddToAcivityFeed(
+          currentUserId, addedId, username, userImage, docId);
+    }
+  } else {
+    if (likes.contains(currentUserId)) {
+      likes.remove(currentUserId);
+      if (addedId != currentUserId) {
+        await removeLikeFromActivityFeed(currentUserId, addedId);
+      }
+    } else {
+      likes.add(currentUserId);
+      if (addedId != currentUserId) {
+        await likeAddToAcivityFeed(
+            currentUserId, addedId, username, userImage, docId);
+      }
+    }
+  }
+
+  await garageRef.document(docId).updateData({
+    "likes": likes,
+  });
+}
+
+likeAddToAcivityFeed(String userId, String addedId, String username,
+    String userImage, String docId) {
+  var uuid = Uuid();
+
+  activityFeedRef.document(addedId).collection('feedItems').add({
+    "id": uuid.v1().toString() + new DateTime.now().toString(),
+    "userId": userId,
+    "username": username,
+    "userProfileImage": userImage,
+    "type": "likeGarage",
+    "typeId": docId,
+    "read": false,
+    "timestamp": timestamp,
+  });
+}
+
+removeLikeFromActivityFeed(
+  String userId,
+  String addedId,
+) async {
+  QuerySnapshot snp = await activityFeedRef
+      .document(addedId)
+      .collection('feedItems')
+      .getDocuments();
+
+  snp.documents.forEach((element) async {
+    ActivityFeedNotify activityFeed = ActivityFeedNotify.fromDocument(element);
+    if (activityFeed.type == "likeGarage") {
+      await activityFeedRef
+          .document(addedId)
+          .collection('feedItems')
+          .document(userId)
+          .delete();
+    }
+  });
+}
+
+commentsToGarage(String docId, String garageId, String currentUserId,
+    String comment, String type) async {
+  final result =
+      await garageRef.where('id', isEqualTo: garageId).getDocuments();
+  Garage gar = Garage.fromDocument(result.documents[0]);
+  List commentsForGarage = [];
+  if (gar.comments != null) {
+    commentsForGarage = gar.comments;
+  }
+
+  var aComment = {
+    "userId": currentUserId,
+    "comment": comment,
+    "type": type,
+    "timestamp": timestamp
+  };
+
+  commentsForGarage.add(aComment);
+
+  await garageRef.document(docId).updateData({
+    "comments": json.encode(commentsForGarage),
+  });
+}
+
+commentAddToAcivityFeed(String userId, String addedId, String username,
+    String userImage, String docId) {
+  var uuid = Uuid();
+
+  activityFeedRef.document(addedId).collection('feedItems').add({
+    "id": uuid.v1().toString() + new DateTime.now().toString(),
+    "userId": userId,
+    "username": username,
+    "userProfileImage": userImage,
+    "type": "commentGarage",
+    "typeId": docId,
+    "read": false,
+    "timestamp": timestamp,
+  });
+}
+
+removeCommentFromActivityFeed(
+  String userId,
+  String addedId,
+) async {
+ QuerySnapshot snp = await activityFeedRef
+      .document(addedId)
+      .collection('feedItems')
+      .getDocuments();
+
+  snp.documents.forEach((element) async {
+    ActivityFeedNotify activityFeed = ActivityFeedNotify.fromDocument(element);
+    if (activityFeed.type == "commentGarage") {
+      await activityFeedRef
+          .document(addedId)
+          .collection('feedItems')
+          .document(userId)
+          .delete();
+    }
+  });
 }

@@ -20,6 +20,8 @@ class Garage {
   final Timestamp closeAt;
   final dynamic closedDays;
   final dynamic ratings;
+  final dynamic likes;
+  final dynamic comments;
   final Timestamp timestamp;
 
   Garage(
@@ -42,6 +44,8 @@ class Garage {
       this.closeAt,
       this.closedDays,
       this.ratings,
+      this.likes,
+      this.comments,
       this.timestamp});
 
   factory Garage.fromDocument(DocumentSnapshot doc) {
@@ -65,6 +69,8 @@ class Garage {
         closeAt: doc['closeAt'],
         closedDays: doc['closedDays'],
         ratings: doc['ratings'],
+        likes: doc['likes'],
+        comments: doc['comments'],
         timestamp: doc['timestamp']);
   }
 }

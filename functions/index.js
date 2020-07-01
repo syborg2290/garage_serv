@@ -10,7 +10,7 @@ admin.initializeApp();
 // });
 
 exports.onCreateActivityFeedItem = functions.firestore
-    .document("/feed/{userId}/feedItems/{activityFeedItem}")
+    .document("/feedNotification/{userId}/feedItems/{activityFeedItem}")
     .onCreate(async (snapshot, context) => {
         console.log("Activity Feed Item Created", snapshot.data());
 
@@ -42,6 +42,15 @@ exports.onCreateActivityFeedItem = functions.firestore
                     body = `${activityFeedItem.username} started following you`;
                     type = "follow";
                     break;
+                case "likeGarage":
+                    body = `${activityFeedItem.username} liked your garage`;
+                    type = "likeGarage";
+                    break;
+                case "commentGarage":
+                    body = `${activityFeedItem.username} commented on your garage`;
+                    type = "commentGarage";
+                    break;
+
                 default:
                     break;
             }

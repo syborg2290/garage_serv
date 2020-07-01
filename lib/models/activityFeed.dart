@@ -25,7 +25,7 @@ class ActivityFeedNotify {
       id: doc['id'],
       userId: doc['userId'],
       username: doc['username'],
-      userImage: doc['userImage'],
+      userImage: doc['userProfileImage'],
       type: doc['type'],
       typeId: doc['typeId'],
       read: doc['read'],

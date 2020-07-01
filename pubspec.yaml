@@ -58,6 +58,7 @@ dependencies:
   flutter_polyline_points: ^0.2.1
   rating_bar: ^0.2.0
   timeago: ^2.0.26
+  cached_network_image: ^2.2.0+1
   chewie:
     path: ./lib/modified_lib/chewie-0.9.10
   flutter_google_places:
@@ -158,6 +159,10 @@ flutter:
     - assets/Icons/share.png
     - assets/Icons/love.png
     - assets/Icons/love_red.png
+    - assets/Icons/options.png
+    - assets/Icons/delete.png
+    - assets/Icons/report.png
+    - assets/Icons/plus.png
     
     - assets/json/main_category.json
     - assets/json/garage_vehicles.json

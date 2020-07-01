@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:empty_widget/empty_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -46,40 +47,41 @@ class _ActivityFeedState extends State<ActivityFeed> {
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (!snapshot.hasData) {
               return circularProgress();
-            }
-            if (snapshot.data.documents.length == 0) {
-              return Center(
-                child: EmptyListWidget(
-                    title: 'No Notification',
-                    subTitle: 'No  notification available yet',
-                    image: 'assets/designs/empty.png',
-                    titleTextStyle: Theme.of(context)
-                        .typography
-                        .dense
-                        .display1
-                        .copyWith(color: Color(0xff9da9c7)),
-                    subtitleTextStyle: Theme.of(context)
-                        .typography
-                        .dense
-                        .body2
-                        .copyWith(color: Color(0xffabb8d6))),
-              );
             } else {
-              List<ActivityFeedNotify> feedItems = [];
+              if (snapshot.data.documents.length == 0) {
+                return Center(
+                  child: EmptyListWidget(
+                      title: 'No Notification',
+                      subTitle: 'No  notification available yet',
+                      image: 'assets/designs/empty.png',
+                      titleTextStyle: Theme.of(context)
+                          .typography
+                          .dense
+                          .display1
+                          .copyWith(color: Color(0xff9da9c7)),
+                      subtitleTextStyle: Theme.of(context)
+                          .typography
+                          .dense
+                          .body2
+                          .copyWith(color: Color(0xffabb8d6))),
+                );
+              } else {
+                List<ActivityFeedNotify> feedItems = [];
 
-              snapshot.data.documents.forEach((doc) {
-                feedItems.add(ActivityFeedNotify.fromDocument(doc));
-              });
-              return ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  itemCount: feedItems.length,
-                  itemBuilder: (context, index) {
-                    return NotificationFeed(
-                      feed: feedItems[index],
-                      height: height,
-                      width: width,
-                    );
-                  });
+                snapshot.data.documents.forEach((doc) {
+                  feedItems.add(ActivityFeedNotify.fromDocument(doc));
+                });
+                return ListView.builder(
+                    scrollDirection: Axis.vertical,
+                    itemCount: feedItems.length,
+                    itemBuilder: (context, index) {
+                      return NotificationFeed(
+                        feed: feedItems[index],
+                        height: height,
+                        width: width,
+                      );
+                    });
+              }
             }
           },
         ),
@@ -107,6 +109,14 @@ class NotificationFeed extends StatelessWidget {
       activityItemText = "started following you";
     }
 
+    if (feed.type == "likeGarage") {
+      activityItemText = "liked your garage";
+    }
+
+    if (feed.type == "commentGarage") {
+      activityItemText = "commented on your garage";
+    }
+
     return Padding(
       padding: EdgeInsets.only(bottom: 2.0, top: 10),
       child: ListTile(
@@ -132,17 +142,8 @@ class NotificationFeed extends StatelessWidget {
         leading: CircleAvatar(
           radius: 30,
           backgroundImage: feed.userImage == null
-              ? AssetImage('assets/images/avatar_men.png')
-              : ProgressiveImage(
-                  placeholder: AssetImage('assets/Icons/user.png'),
-                  // size: 1.87KB
-                  thumbnail: NetworkImage(feed.userImage),
-                  // size: 1.29MB
-                  image: NetworkImage(feed.userImage),
-                  width: width * 0.2,
-                  height: height * 0.1,
-                  fit: BoxFit.cover,
-                ),
+              ? AssetImage('assets/Icons/user.png')
+              : CachedNetworkImageProvider(feed.userImage),
         ),
         subtitle: Text(
           timeago.format(feed.timestamp.toDate()),
@@ -164,7 +165,7 @@ class NotificationFeed extends StatelessWidget {
               //     fontSize: 16.0);
             },
             child: Image.asset(
-              'assets/icons/close.png',
+              'assets/Icons/close.png',
               width: 30,
               height: 30,
             ),
