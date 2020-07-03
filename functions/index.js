@@ -35,6 +35,7 @@ exports.onCreateActivityFeedItem = functions.firestore
             let userIdOfActivityFeed;
             let fromUserImage;
             let typeId;
+            let index;
 
             //switch body value based off notification type
             switch (activityFeedItem.type) {
@@ -59,6 +60,12 @@ exports.onCreateActivityFeedItem = functions.firestore
             fromUserImage = activityFeedItem.userProfileImage;
             typeId = activityFeedItem.typeId;
 
+            if (activityFeedItem.anyIndex == null) {
+                index = 0;
+            } else {
+                index = activityFeedItem.anyIndex;
+            }
+
             //create message for push notification
             const message = {
                 notification: {
@@ -68,6 +75,8 @@ exports.onCreateActivityFeedItem = functions.firestore
                 data: {
                     recipient: userId,
                     typeId: typeId,
+                    index: index.toString(),
+                    type: type,
                     userImage: fromUserImage,
                     username: activityFeedItem.username,
                     fromUserId: userIdOfActivityFeed,

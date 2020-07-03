@@ -20,7 +20,9 @@ import 'package:timeago/timeago.dart' as timeago;
 class GarageComments extends StatefulWidget {
   final Garage garage;
   final String docId;
-  GarageComments({this.garage, this.docId, Key key}) : super(key: key);
+  final int index;
+  GarageComments({this.garage, this.docId, this.index, Key key})
+      : super(key: key);
 
   @override
   _GarageCommentsState createState() => _GarageCommentsState();
@@ -35,6 +37,7 @@ class _GarageCommentsState extends State<GarageComments> {
   User useObj;
   String mediaUrl;
   String mediaType;
+  List currentGarageComments = [];
 
   @override
   void initState() {
@@ -66,11 +69,18 @@ class _GarageCommentsState extends State<GarageComments> {
         SystemUiOverlayStyle(statusBarColor: Colors.transparent));
 
     if (_scrollController.hasClients) {
-      Timer(
-        Duration(seconds: 1),
-        () => _scrollController
-            .jumpTo(_scrollController.position.maxScrollExtent),
-      );
+      if (widget.index == null) {
+        Timer(
+          Duration(seconds: 1),
+          () => _scrollController
+              .jumpTo(_scrollController.position.maxScrollExtent),
+        );
+      } else {
+        Timer(
+          Duration(seconds: 1),
+          () => _scrollController.jumpTo(widget.index.toDouble()),
+        );
+      }
     }
 
     return Scaffold(
@@ -132,6 +142,7 @@ class _GarageCommentsState extends State<GarageComments> {
                           Garage ga = Garage.fromDocument(doc);
                           if (ga.comments != null) {
                             comments = json.decode(ga.comments);
+                            currentGarageComments = json.decode(ga.comments);
                           }
                         });
 
@@ -336,13 +347,14 @@ class _GarageCommentsState extends State<GarageComments> {
                           await commentsToGarage(widget.docId, widget.garage.id,
                               currentUserId, commentText, "text");
 
-                          if (currentUserId == widget.garage.addedId) {
+                          if (currentUserId != widget.garage.addedId) {
                             commentAddToAcivityFeed(
                                 currentUserId,
                                 widget.garage.addedId,
                                 currentUser.username,
                                 currentUser.thumbnailUserPhotoUrl,
-                                widget.docId);
+                                widget.docId,
+                                currentGarageComments.length);
                           }
                         },
                         child: Container(
@@ -402,7 +414,8 @@ class _GarageCommentsState extends State<GarageComments> {
                                     widget.garage.addedId,
                                     currentUser.username,
                                     currentUser.thumbnailUserPhotoUrl,
-                                    widget.docId);
+                                    widget.docId,
+                                    currentGarageComments.length);
                               }
                             }
                             ;

@@ -7,6 +7,7 @@ class ActivityFeedNotify {
   final String userImage;
   final String type;
   final String typeId;
+  final int anyIndex;
   final bool read;
   final Timestamp timestamp;
 
@@ -18,6 +19,7 @@ class ActivityFeedNotify {
       this.type,
       this.typeId,
       this.read,
+      this.anyIndex,
       this.timestamp});
 
   factory ActivityFeedNotify.fromDocument(DocumentSnapshot doc) {
@@ -29,6 +31,7 @@ class ActivityFeedNotify {
       type: doc['type'],
       typeId: doc['typeId'],
       read: doc['read'],
+      anyIndex: doc['anyIndex'],
       timestamp: doc['timestamp'],
     );
   }

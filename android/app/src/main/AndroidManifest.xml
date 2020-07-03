@@ -19,7 +19,9 @@
     <application
         android:name=".Application" 
         android:label="garage"
-        android:icon="@mipmap/launcher_icon"> 
+        android:icon="@mipmap/launcher_icon"
+        android:hardwareAccelerated="true"
+        > 
         <meta-data android:name="com.google.android.geo.API_KEY"
                android:value="AIzaSyDXDNlMMK_J6ORTXValGxmg6TgQ5mkPeuo"/>
         

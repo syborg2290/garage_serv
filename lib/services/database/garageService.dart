@@ -31,6 +31,11 @@ Future<QuerySnapshot> garagesAll() async {
   return result;
 }
 
+Future<Garage> getSpecificGarage(String docId) async {
+  Garage gar = Garage.fromDocument(await garageRef.document(docId).get());
+  return gar;
+}
+
 addAGarage(
   String currentUserId,
   String garageName,
@@ -273,7 +278,7 @@ commentsToGarage(String docId, String garageId, String currentUserId,
 }
 
 commentAddToAcivityFeed(String userId, String addedId, String username,
-    String userImage, String docId) {
+    String userImage, String docId, int index) {
   var uuid = Uuid();
 
   activityFeedRef.document(addedId).collection('feedItems').add({
@@ -284,6 +289,7 @@ commentAddToAcivityFeed(String userId, String addedId, String username,
     "type": "commentGarage",
     "typeId": docId,
     "read": false,
+    "anyIndex": index,
     "timestamp": timestamp,
   });
 }

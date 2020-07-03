@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -12,6 +13,8 @@ import 'package:garage/main/main_pages/activity_feed.dart';
 import 'package:garage/main/main_pages/find.dart';
 import 'package:garage/main/main_pages/profile.dart';
 import 'package:garage/main/main_pages/timeline.dart';
+import 'package:garage/main/services/sub/garageComment.dart';
+import 'package:garage/models/main_services/garage.dart';
 import 'package:garage/models/user.dart';
 import 'package:garage/services/database/userStuff.dart';
 import 'package:garage/utils/palette.dart';
@@ -19,6 +22,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:garage/utils/progress_bars.dart';
 import 'package:http/http.dart' as http;
+import 'package:garage/services/database/garageService.dart';
+import 'package:garage/main/services/sub/garagePage.dart';
 
 class AuthScreen extends StatefulWidget {
   AuthScreen({Key key}) : super(key: key);
@@ -102,15 +107,46 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   Future onSelectNotification(String payload) async {
-    showDialog(
-      context: context,
-      builder: (_) {
-        return new AlertDialog(
-          title: Text("PayLoad"),
-          content: Text("Payload : $payload"),
+    Map<String, dynamic> re = json.decode(payload);
+    if (re["data"]["type"] == "commentGarage") {
+      Garage garage = await getSpecificGarage(re["data"]["typeId"]);
+      if (garage != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => GarageComments(
+                    docId: re["data"]["typeId"],
+                    index: int.parse(re["data"]["index"]),
+                    garage: garage,
+                  )),
         );
-      },
-    );
+      }
+    }
+
+    if (re["data"]["type"] == "likeGarage") {
+      Garage garage = await getSpecificGarage(re["data"]["typeId"]);
+      if (garage != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => GaragePage(
+                    currentUser: currentUser,
+                    docId: re["data"]["typeId"],
+                    garage: garage,
+                  )),
+        );
+      }
+    }
+
+    if (re["data"]["type"] == "follow") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => Profile(
+                  profileId: re["data"]["typeId"],
+                )),
+      );
+    }
   }
 
   Future<String> _downloadAndSaveFile(String url, String fileName) async {
@@ -132,8 +168,8 @@ class _AuthScreenState extends State<AuthScreen> {
     vibrationPattern[3] = 2000;
 
     var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-      'your channel id',
-      'your channel name',
+      currentUser.id,
+      currentUser.username,
       'your channel description',
       enableVibration: true,
       vibrationPattern: vibrationPattern,
@@ -141,13 +177,14 @@ class _AuthScreenState extends State<AuthScreen> {
       priority: Priority.High,
       playSound: true,
       enableLights: true,
-      color: const Color.fromARGB(255, 255, 0, 0),
-      ledColor: const Color.fromARGB(255, 255, 0, 0),
+      color: Palette.appColor,
+      ledColor: Palette.appColor,
       ledOnMs: 1000,
       ledOffMs: 500,
       sound: RawResourceAndroidNotificationSound('swiftly'),
       largeIcon: FilePathAndroidBitmap(path),
       styleInformation: MediaStyleInformation(),
+
       //ongoing: true,
     );
     var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
@@ -158,72 +195,72 @@ class _AuthScreenState extends State<AuthScreen> {
       message["data"]["username"],
       message["notification"]["body"],
       platformChannelSpecifics,
-      payload: 'Custom_Sound',
+      payload: json.encode(message),
     );
   }
 
-  Future<void> _showMessagingNotification() async {
-    // use a platform channel to resolve an Android drawable resource to a URI.
-    // This is NOT part of the notifications plugin. Calls made over this channel is handled by the app
-    // String imageUri = await platform.invokeMethod('drawableToUri', 'food');
-    var messages = List<Message>();
-    // First two person objects will use icons that part of the Android app's drawable resources
-    var me = Person(
-      name: 'Me',
-      key: '1',
-      uri: 'tel:1234567890',
-      icon: DrawableResourceAndroidIcon('me'),
-    );
-    var coworker = Person(
-      name: 'Coworker',
-      key: '2',
-      uri: 'tel:9876543210',
-      icon: FlutterBitmapAssetAndroidIcon('Icons/service.png'),
-    );
-    // download the icon that would be use for the lunch bot person
-    var largeIconPath = await _downloadAndSaveFile(
-        'http://via.placeholder.com/48x48', 'largeIcon');
-    // this person object will use an icon that was downloaded
-    var lunchBot = Person(
-      name: 'Lunch bot',
-      key: 'bot',
-      bot: true,
-      icon: BitmapFilePathAndroidIcon(largeIconPath),
-    );
-    messages.add(Message('Hi', DateTime.now(), null));
-    messages.add(Message(
-        'What\'s up?', DateTime.now().add(Duration(minutes: 5)), coworker));
-    // messages.add(Message(
-    //     'Lunch?', DateTime.now().add(Duration(minutes: 10)), null,
-    //     dataMimeType: 'image/png', dataUri: imageUri));
-    messages.add(Message('What kind of food would you prefer?',
-        DateTime.now().add(Duration(minutes: 10)), lunchBot));
-    var messagingStyle = MessagingStyleInformation(me,
-        groupConversation: true,
-        conversationTitle: 'Team lunch',
-        htmlFormatContent: true,
-        htmlFormatTitle: true,
-        messages: messages);
-    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-        'message channel id',
-        'message channel name',
-        'message channel description',
-        category: 'msg',
-        styleInformation: messagingStyle);
-    var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
-    var platformChannelSpecifics = NotificationDetails(
-        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-    await flutterLocalNotificationsPlugin.show(
-        0, 'message title', 'message body', platformChannelSpecifics);
+  // Future<void> _showMessagingNotification() async {
+  //   // use a platform channel to resolve an Android drawable resource to a URI.
+  //   // This is NOT part of the notifications plugin. Calls made over this channel is handled by the app
+  //   // String imageUri = await platform.invokeMethod('drawableToUri', 'food');
+  //   var messages = List<Message>();
+  //   // First two person objects will use icons that part of the Android app's drawable resources
+  //   var me = Person(
+  //     name: 'Me',
+  //     key: '1',
+  //     uri: 'tel:1234567890',
+  //     icon: DrawableResourceAndroidIcon('me'),
+  //   );
+  //   var coworker = Person(
+  //     name: 'Coworker',
+  //     key: '2',
+  //     uri: 'tel:9876543210',
+  //     icon: FlutterBitmapAssetAndroidIcon('Icons/service.png'),
+  //   );
+  //   // download the icon that would be use for the lunch bot person
+  //   var largeIconPath = await _downloadAndSaveFile(
+  //       'http://via.placeholder.com/48x48', 'largeIcon');
+  //   // this person object will use an icon that was downloaded
+  //   var lunchBot = Person(
+  //     name: 'Lunch bot',
+  //     key: 'bot',
+  //     bot: true,
+  //     icon: BitmapFilePathAndroidIcon(largeIconPath),
+  //   );
+  //   messages.add(Message('Hi', DateTime.now(), null));
+  //   messages.add(Message(
+  //       'What\'s up?', DateTime.now().add(Duration(minutes: 5)), coworker));
+  //   // messages.add(Message(
+  //   //     'Lunch?', DateTime.now().add(Duration(minutes: 10)), null,
+  //   //     dataMimeType: 'image/png', dataUri: imageUri));
+  //   messages.add(Message('What kind of food would you prefer?',
+  //       DateTime.now().add(Duration(minutes: 10)), lunchBot));
+  //   var messagingStyle = MessagingStyleInformation(me,
+  //       groupConversation: true,
+  //       conversationTitle: 'Team lunch',
+  //       htmlFormatContent: true,
+  //       htmlFormatTitle: true,
+  //       messages: messages);
+  //   var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+  //       'message channel id',
+  //       'message channel name',
+  //       'message channel description',
+  //       category: 'msg',
+  //       styleInformation: messagingStyle);
+  //   var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
+  //   var platformChannelSpecifics = NotificationDetails(
+  //       androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+  //   await flutterLocalNotificationsPlugin.show(
+  //       0, 'message title', 'message body', platformChannelSpecifics);
 
-    // wait 10 seconds and add another message to simulate another response
-    await Future.delayed(Duration(seconds: 10), () async {
-      messages.add(
-          Message('Thai', DateTime.now().add(Duration(minutes: 11)), null));
-      await flutterLocalNotificationsPlugin.show(
-          0, 'message title', 'message body', platformChannelSpecifics);
-    });
-  }
+  //   // wait 10 seconds and add another message to simulate another response
+  //   await Future.delayed(Duration(seconds: 10), () async {
+  //     messages.add(
+  //         Message('Thai', DateTime.now().add(Duration(minutes: 11)), null));
+  //     await flutterLocalNotificationsPlugin.show(
+  //         0, 'message title', 'message body', platformChannelSpecifics);
+  //   });
+  // }
 
   onPageChanged(int pageIndex) {
     setState(() {
