@@ -530,118 +530,128 @@ class _EditProfileState extends State<EditProfile> {
         body: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.only(bottom: height * 0.02),
-            child: Column(
-              children: <Widget>[
-                SizedBox(
-                  height: height * 0.02,
-                ),
-                Stack(
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.only(
-                        top: height * 0.01,
-                        left: width * 0.1,
-                        right: width * 0.1,
-                      ),
-                      child: Container(
-                        width: (width * 0.6).round().toDouble(),
-                        height: (height * 0.302).round().toDouble(),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(
-                            color: Color.fromRGBO(129, 165, 168, 1),
-                            width: 5,
-                          ),
-                          shape: BoxShape.circle,
+            child: GestureDetector(
+              onTap: () {
+                FocusScope.of(context).requestFocus(FocusNode());
+              },
+              child: Column(
+                children: <Widget>[
+                  SizedBox(
+                    height: height * 0.02,
+                  ),
+                  Stack(
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.only(
+                          top: height * 0.01,
+                          left: width * 0.1,
+                          right: width * 0.1,
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(2.0),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(width * 0.6),
-                            child: profileImage == null
-                                ? widget.user.thumbnailUserPhotoUrl == null
-                                    ? Image.asset(
-                                        'assets/Icons/user.png',
-                                        width: (width * 0.6).round().toDouble(),
-                                        height:
-                                            (height * 0.302).round().toDouble(),
-                                        fit: BoxFit.cover,
-                                      )
-                                    : Image.network(
-                                        widget.user.thumbnailUserPhotoUrl,
-                                        width: (width * 0.6).round().toDouble(),
-                                        height:
-                                            (height * 0.302).round().toDouble(),
-                                        fit: BoxFit.cover,
-                                      )
-                                : Image.file(profileImage,
-                                    width: (width * 0.6).round().toDouble(),
-                                    height: (height * 0.302).round().toDouble(),
-                                    fit: BoxFit.cover),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(
-                        left: width * 0.64,
-                        top: height * 0.05,
-                      ),
-                      child: FloatingActionButton(
-                        heroTag: 'profile_change',
-                        onPressed: () {
-                          pickProfilePictures();
-                        },
-                        backgroundColor: Palette.appColor,
-                        child: Image.asset(
-                          'assets/Icons/edit.png',
-                          width: 30,
-                          height: 30,
-                        ),
-                      ),
-                    ),
-                    profileImage != null
-                        ? Padding(
-                            padding: EdgeInsets.only(
-                              right: width * 0.64,
-                              top: height * 0.05,
+                        child: Container(
+                          width: (width * 0.6).round().toDouble(),
+                          height: (height * 0.302).round().toDouble(),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(
+                              color: Color.fromRGBO(129, 165, 168, 1),
+                              width: 5,
                             ),
-                            child: FloatingActionButton(
-                              heroTag: 'profile_revert',
-                              onPressed: () {
-                                setState(() {
-                                  profileImage = null;
-                                });
-                              },
-                              backgroundColor: Palette.appColor,
-                              child: Image.asset(
-                                'assets/Icons/redo.png',
-                                width: 30,
-                                height: 30,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(2.0),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(width * 0.6),
+                              child: profileImage == null
+                                  ? widget.user.thumbnailUserPhotoUrl == null
+                                      ? Image.asset(
+                                          'assets/Icons/user.png',
+                                          width:
+                                              (width * 0.6).round().toDouble(),
+                                          height: (height * 0.302)
+                                              .round()
+                                              .toDouble(),
+                                          fit: BoxFit.cover,
+                                        )
+                                      : Image.network(
+                                          widget.user.thumbnailUserPhotoUrl,
+                                          width:
+                                              (width * 0.6).round().toDouble(),
+                                          height: (height * 0.302)
+                                              .round()
+                                              .toDouble(),
+                                          fit: BoxFit.cover,
+                                        )
+                                  : Image.file(profileImage,
+                                      width: (width * 0.6).round().toDouble(),
+                                      height:
+                                          (height * 0.302).round().toDouble(),
+                                      fit: BoxFit.cover),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                          left: width * 0.64,
+                          top: height * 0.05,
+                        ),
+                        child: FloatingActionButton(
+                          heroTag: 'profile_change',
+                          onPressed: () {
+                            pickProfilePictures();
+                          },
+                          backgroundColor: Palette.appColor,
+                          child: Image.asset(
+                            'assets/Icons/edit.png',
+                            width: 30,
+                            height: 30,
+                          ),
+                        ),
+                      ),
+                      profileImage != null
+                          ? Padding(
+                              padding: EdgeInsets.only(
+                                right: width * 0.64,
+                                top: height * 0.05,
                               ),
-                            ),
-                          )
-                        : SizedBox.shrink(),
-                  ],
-                ),
-                conatinerOfTextField(width, height, "Your username", username,
-                    1, false, false, false),
-                conatinerOfTextField(
-                    width,
-                    height,
-                    "Tell your friends who you are",
-                    aboutYou,
-                    5,
-                    false,
-                    false,
-                    false),
-                conatinerOfTextField(width, height, "Your contact number",
-                    phoneNumber, 1, true, false, false),
-                conatinerOfTextField(width, height, "Your date of birth", dob,
-                    1, false, true, false),
-                conatinerOfTextField(width, height, "Your location", location,
-                    1, false, true, true),
-              ],
+                              child: FloatingActionButton(
+                                heroTag: 'profile_revert',
+                                onPressed: () {
+                                  setState(() {
+                                    profileImage = null;
+                                  });
+                                },
+                                backgroundColor: Palette.appColor,
+                                child: Image.asset(
+                                  'assets/Icons/redo.png',
+                                  width: 30,
+                                  height: 30,
+                                ),
+                              ),
+                            )
+                          : SizedBox.shrink(),
+                    ],
+                  ),
+                  conatinerOfTextField(width, height, "Your username", username,
+                      1, false, false, false),
+                  conatinerOfTextField(
+                      width,
+                      height,
+                      "Tell your friends who you are",
+                      aboutYou,
+                      5,
+                      false,
+                      false,
+                      false),
+                  conatinerOfTextField(width, height, "Your contact number",
+                      phoneNumber, 1, true, false, false),
+                  conatinerOfTextField(width, height, "Your date of birth", dob,
+                      1, false, true, false),
+                  conatinerOfTextField(width, height, "Your location", location,
+                      1, false, true, true),
+                ],
+              ),
             ),
           ),
         ));

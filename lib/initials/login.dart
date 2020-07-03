@@ -67,9 +67,41 @@ class _LoginState extends State<Login> {
               GradientSnackBar.showMessage(context, "Sorry! no account found!");
             }
           } catch (e) {
-            if (e.code == "ERROR_USER_NOT_FOUND") {
-              pr.hide();
-              GradientSnackBar.showMessage(context, "Sorry! no account found!");
+            switch (e.code) {
+              case "ERROR_INVALID_EMAIL":
+                pr.hide();
+                GradientSnackBar.showMessage(context,
+                    "Sorry! Your email address appears to be malformed!");
+                break;
+              case "ERROR_WRONG_PASSWORD":
+                pr.hide();
+                GradientSnackBar.showMessage(
+                    context, "Sorry! Your password is wrong!");
+                break;
+              case "ERROR_USER_NOT_FOUND":
+                pr.hide();
+                GradientSnackBar.showMessage(
+                    context, "Sorry! User with this email doesn't exist!");
+                break;
+              case "ERROR_USER_DISABLED":
+                pr.hide();
+                GradientSnackBar.showMessage(
+                    context, "Sorry! User with this email has been disabled!");
+                break;
+              case "ERROR_TOO_MANY_REQUESTS":
+                pr.hide();
+                GradientSnackBar.showMessage(
+                    context, "Sorry! no account found!");
+                break;
+              case "ERROR_OPERATION_NOT_ALLOWED":
+                pr.hide();
+                GradientSnackBar.showMessage(
+                    context, "Sorry! no account found!");
+                break;
+              default:
+                pr.hide();
+                GradientSnackBar.showMessage(
+                    context, "Sorry! no account found!");
             }
           }
         } else {

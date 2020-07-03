@@ -57,8 +57,12 @@ dependencies:
   flutter_cache_manager: ^1.4.1
   flutter_polyline_points: ^0.2.1
   rating_bar: ^0.2.0
+  http: ^0.12.1
   timeago: ^2.0.26
   cached_network_image: ^2.2.0+1
+  expand_widget: ^1.0.0+1
+  giphy_picker:
+    path: ./lib/modified_lib/giphy_picker-1.0.4
   chewie:
     path: ./lib/modified_lib/chewie-0.9.10
   flutter_google_places:
@@ -163,6 +167,8 @@ flutter:
     - assets/Icons/delete.png
     - assets/Icons/report.png
     - assets/Icons/plus.png
+    - assets/Icons/plane.png
+    - assets/Icons/gif.png
     
     - assets/json/main_category.json
     - assets/json/garage_vehicles.json

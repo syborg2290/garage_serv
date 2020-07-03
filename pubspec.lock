@@ -141,6 +141,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.0"
+  expand_widget:
+    dependency: "direct main"
+    description:
+      name: expand_widget
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0+1"
   file:
     dependency: transitive
     description:
@@ -333,6 +340,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.3.2+2"
+  giphy_client:
+    dependency: transitive
+    description:
+      name: giphy_client
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.0"
+  giphy_picker:
+    dependency: "direct main"
+    description:
+      path: "lib/modified_lib/giphy_picker-1.0.4"
+      relative: true
+    source: path
+    version: "1.0.4"
   google_api_availability:
     dependency: transitive
     description:
@@ -369,7 +390,7 @@ packages:
     source: hosted
     version: "1.2.8"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http
       url: "https://pub.dartlang.org"

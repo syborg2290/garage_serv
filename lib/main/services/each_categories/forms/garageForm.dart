@@ -944,150 +944,593 @@ class _GarageFormState extends State<GarageForm> {
         ),
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              SizedBox(
-                height: height * 0.03,
-              ),
-              Text(
-                "Add images & video about your garage",
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontSize: 17,
+          child: GestureDetector(
+            onTap: () {
+              FocusScope.of(context).requestFocus(FocusNode());
+            },
+            child: Column(
+              children: <Widget>[
+                SizedBox(
+                  height: height * 0.03,
                 ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              media.isEmpty
-                  ? Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Center(
-                        child: GestureDetector(
-                          onTap: () {
-                            pickMedia();
-                          },
-                          child: Container(
-                            width: width * 0.30,
-                            height: height * 0.15,
-                            child: Card(
-                              clipBehavior: Clip.antiAliasWithSaveLayer,
-                              child: Container(
-                                width: width * 0.30,
-                                height: height * 0.15,
-                                child: Center(
-                                  child: Padding(
-                                    padding: EdgeInsets.all(height * 0.01),
-                                    child: Image.asset(
-                                      'assets/Icons/add.png',
-                                      width: 60,
-                                      height: 60,
-                                      color: Color.fromRGBO(129, 165, 168, 1),
-                                      fit: BoxFit.contain,
+                Text(
+                  "Add images & video about your garage",
+                  style: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 17,
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                media.isEmpty
+                    ? Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Center(
+                          child: GestureDetector(
+                            onTap: () {
+                              pickMedia();
+                            },
+                            child: Container(
+                              width: width * 0.30,
+                              height: height * 0.15,
+                              child: Card(
+                                clipBehavior: Clip.antiAliasWithSaveLayer,
+                                child: Container(
+                                  width: width * 0.30,
+                                  height: height * 0.15,
+                                  child: Center(
+                                    child: Padding(
+                                      padding: EdgeInsets.all(height * 0.01),
+                                      child: Image.asset(
+                                        'assets/Icons/add.png',
+                                        width: 60,
+                                        height: 60,
+                                        color: Color.fromRGBO(129, 165, 168, 1),
+                                        fit: BoxFit.contain,
+                                      ),
                                     ),
                                   ),
                                 ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                ),
+                                elevation: 10,
+                                margin: EdgeInsets.all(5),
                               ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20.0),
-                              ),
-                              elevation: 10,
-                              margin: EdgeInsets.all(5),
                             ),
                           ),
                         ),
-                      ),
-                    )
-                  : SizedBox(
-                      height: height * 0.3,
-                      child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: media.length,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                children: <Widget>[
-                                  index == 0
-                                      ? GestureDetector(
-                                          onTap: () {
-                                            pickMedia();
-                                          },
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Container(
-                                              width: width * 0.30,
-                                              height: height * 0.15,
-                                              child: Card(
-                                                clipBehavior:
-                                                    Clip.antiAliasWithSaveLayer,
-                                                child: Container(
-                                                  width: width * 0.30,
-                                                  height: height * 0.15,
-                                                  child: Center(
-                                                    child: Padding(
-                                                      padding: EdgeInsets.all(
-                                                          height * 0.01),
-                                                      child: Image.asset(
-                                                        'assets/Icons/add.png',
-                                                        width: 60,
-                                                        height: 60,
-                                                        color: Color.fromRGBO(
-                                                            129, 165, 168, 1),
-                                                        fit: BoxFit.contain,
+                      )
+                    : SizedBox(
+                        height: height * 0.3,
+                        child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: media.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  children: <Widget>[
+                                    index == 0
+                                        ? GestureDetector(
+                                            onTap: () {
+                                              pickMedia();
+                                            },
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Container(
+                                                width: width * 0.30,
+                                                height: height * 0.15,
+                                                child: Card(
+                                                  clipBehavior: Clip
+                                                      .antiAliasWithSaveLayer,
+                                                  child: Container(
+                                                    width: width * 0.30,
+                                                    height: height * 0.15,
+                                                    child: Center(
+                                                      child: Padding(
+                                                        padding: EdgeInsets.all(
+                                                            height * 0.01),
+                                                        child: Image.asset(
+                                                          'assets/Icons/add.png',
+                                                          width: 60,
+                                                          height: 60,
+                                                          color: Color.fromRGBO(
+                                                              129, 165, 168, 1),
+                                                          fit: BoxFit.contain,
+                                                        ),
                                                       ),
                                                     ),
                                                   ),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20.0),
+                                                  ),
+                                                  elevation: 10,
+                                                  margin: EdgeInsets.all(5),
                                                 ),
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          20.0),
-                                                ),
-                                                elevation: 10,
-                                                margin: EdgeInsets.all(5),
                                               ),
                                             ),
+                                          )
+                                        : SizedBox.shrink(),
+                                    Stack(
+                                      children: <Widget>[
+                                        Container(
+                                          width: width * 0.5,
+                                          height: height * 0.3,
+                                          color: Colors.white,
+                                          child: Card(
+                                            semanticContainer: true,
+                                            clipBehavior:
+                                                Clip.antiAliasWithSaveLayer,
+                                            child: mediaType[index] == "image"
+                                                ? GestureDetector(
+                                                    onTap: () {
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                FullScreenFile(
+                                                                  file: media[
+                                                                      index],
+                                                                  isImage: true,
+                                                                )),
+                                                      );
+                                                    },
+                                                    child: Image.file(
+                                                      media[index],
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  )
+                                                : GestureDetector(
+                                                    onTap: () {},
+                                                    child: VideoPlayerFile(
+                                                      isVolume: false,
+                                                      video: media[index],
+                                                      isSmall: true,
+                                                    ),
+                                                  ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(20.0),
+                                            ),
+                                            elevation: 15,
+                                            margin: EdgeInsets.all(10),
                                           ),
-                                        )
-                                      : SizedBox.shrink(),
-                                  Stack(
-                                    children: <Widget>[
-                                      Container(
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.only(
+                                              left: width * 0.35),
+                                          child: FloatingActionButton(
+                                            heroTag: null,
+                                            onPressed: () {
+                                              if (mediaType[index] == "image") {
+                                                cropImageFile(media[index])
+                                                    .then((croppedImage) {
+                                                  if (croppedImage != null) {
+                                                    setState(() {
+                                                      media[index] =
+                                                          croppedImage;
+                                                    });
+                                                  }
+                                                });
+                                              } else {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            VideoTrimmer(
+                                                              videoFile:
+                                                                  media[index],
+                                                            ))).then((video) {
+                                                  setState(() {
+                                                    media[index] = video;
+                                                  });
+                                                });
+                                              }
+                                            },
+                                            backgroundColor: Palette.appColor,
+                                            child: Image.asset(
+                                              'assets/Icons/cut.png',
+                                              width: 30,
+                                              height: 30,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                        FloatingActionButton(
+                                          heroTag: index + 3,
+                                          onPressed: () {
+                                            setState(() {
+                                              media.removeAt(index);
+                                              mediaType.removeAt(index);
+                                            });
+                                          },
+                                          backgroundColor: Palette.appColor,
+                                          child: Image.asset(
+                                            'assets/Icons/close.png',
+                                            width: 30,
+                                            height: 30,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }),
+                      ),
+                SizedBox(
+                  height: 20,
+                ),
+                Text(
+                  "Fill the details boxes",
+                  style: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 17,
+                  ),
+                ),
+                conatinerOfTextField(
+                    width, height, "Garage name", garageName, 1, false, false),
+                conatinerOfTextField(width, height, "Garage contact number",
+                    garagePhone, 1, false, true),
+                SizedBox(
+                  height: 20,
+                ),
+                Text(
+                  "Enter open and close time of the garage",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 17,
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    openAndClose(width, height, true, openController),
+                    openAndClose(width, height, false, closeController),
+                  ],
+                ),
+                SizedBox(
+                  height: 25,
+                ),
+                Text(
+                  "Mention days of close your garage",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 17,
+                  ),
+                ),
+                SizedBox(
+                    height: height * 0.1,
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        left: 10,
+                        right: 10,
+                      ),
+                      child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: daysOfAWeek.length,
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
+                              onTap: () {
+                                if (daysOfAWeek[index] == "Monday") {
+                                  if (selectedClosingDays.contains("Monday")) {
+                                    setState(() {
+                                      closingDays.remove(1);
+                                      selectedClosingDays.remove("Monday");
+                                    });
+                                  } else {
+                                    setState(() {
+                                      closingDays.add(1);
+                                      selectedClosingDays.add("Monday");
+                                    });
+                                  }
+                                }
+                                if (daysOfAWeek[index] == "Tuesday") {
+                                  if (selectedClosingDays.contains("Tuesday")) {
+                                    setState(() {
+                                      closingDays.remove(2);
+                                      selectedClosingDays.remove("Tuesday");
+                                    });
+                                  } else {
+                                    setState(() {
+                                      closingDays.add(2);
+                                      selectedClosingDays.add("Tuesday");
+                                    });
+                                  }
+                                }
+                                if (daysOfAWeek[index] == "Wednesday") {
+                                  if (selectedClosingDays
+                                      .contains("Wednesday")) {
+                                    setState(() {
+                                      closingDays.remove(3);
+                                      selectedClosingDays.remove("Wednesday");
+                                    });
+                                  } else {
+                                    setState(() {
+                                      closingDays.add(3);
+                                      selectedClosingDays.add("Wednesday");
+                                    });
+                                  }
+                                }
+                                if (daysOfAWeek[index] == "Thursday") {
+                                  if (selectedClosingDays
+                                      .contains("Thursday")) {
+                                    setState(() {
+                                      closingDays.remove(4);
+                                      selectedClosingDays.remove("Thursday");
+                                    });
+                                  } else {
+                                    setState(() {
+                                      closingDays.add(4);
+                                      selectedClosingDays.add("Thursday");
+                                    });
+                                  }
+                                }
+                                if (daysOfAWeek[index] == "Friday") {
+                                  if (selectedClosingDays.contains("Friday")) {
+                                    setState(() {
+                                      closingDays.remove(5);
+                                      selectedClosingDays.remove("Friday");
+                                    });
+                                  } else {
+                                    setState(() {
+                                      closingDays.add(5);
+                                      selectedClosingDays.add("Friday");
+                                    });
+                                  }
+                                }
+                                if (daysOfAWeek[index] == "Saturday") {
+                                  if (selectedClosingDays
+                                      .contains("Saturday")) {
+                                    setState(() {
+                                      closingDays.remove(6);
+                                      selectedClosingDays.remove("Saturday");
+                                    });
+                                  } else {
+                                    setState(() {
+                                      closingDays.add(6);
+                                      selectedClosingDays.add("Saturday");
+                                    });
+                                  }
+                                }
+                                if (daysOfAWeek[index] == "Sunday") {
+                                  if (selectedClosingDays.contains("Sunday")) {
+                                    setState(() {
+                                      closingDays.remove(7);
+                                      selectedClosingDays.remove("Sunday");
+                                    });
+                                  } else {
+                                    setState(() {
+                                      closingDays.add(7);
+                                      selectedClosingDays.add("Sunday");
+                                    });
+                                  }
+                                }
+                              },
+                              child: Container(
+                                width: width * 0.3,
+                                height: height * 0.1,
+                                color: Colors.white,
+                                child: Card(
+                                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                                  color: selectedClosingDays
+                                          .contains(daysOfAWeek[index])
+                                      ? Colors.red
+                                      : Colors.white,
+                                  child: Center(
+                                    child: Text(daysOfAWeek[index],
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: selectedClosingDays
+                                                  .contains(daysOfAWeek[index])
+                                              ? Colors.white
+                                              : Color.fromRGBO(
+                                                  129, 165, 168, 1),
+                                          fontSize: 17,
+                                        )),
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  ),
+                                  elevation: 5,
+                                  margin: EdgeInsets.all(10),
+                                ),
+                              ),
+                            );
+                          }),
+                    )),
+                conatinerOfTextField(width, height, "Garage current address",
+                    garageAddress, 2, false, false),
+                conatinerOfLocation(width, height),
+                SizedBox(
+                  height: 30,
+                ),
+                Text(
+                  "Repairs that your garage perform,",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 17,
+                  ),
+                ),
+                Text(
+                  "(optional add rough cost for each)",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 15,
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                SizedBox(
+                  height: height * 0.23,
+                  child: Padding(
+                    padding: EdgeInsets.only(bottom: 0),
+                    child: Container(
+                      color: Colors.white,
+                      child: FutureBuilder(
+                          future: DefaultAssetBundle.of(context)
+                              .loadString('assets/json/garage_repairs.json'),
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData) {
+                              return circularProgress();
+                            }
+                            List myData = json.decode(snapshot.data);
+                            // myData.shuffle();
+
+                            return ListView.builder(
+                                itemCount: myData.length,
+                                scrollDirection: Axis.horizontal,
+                                shrinkWrap: true,
+                                itemBuilder: (context, index) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      if (repairsType
+                                          .contains(myData[index]['repair'])) {
+                                        setState(() {
+                                          repairsType
+                                              .remove(myData[index]['repair']);
+                                          priceControllers.removeAt(index);
+                                          allRepairForPrice.removeAt(index);
+                                        });
+                                      } else {
+                                        List<TextEditingController> priceEach =
+                                            [];
+                                        vehicleTypes.forEach((element) {
+                                          priceEach
+                                              .add(TextEditingController());
+                                        });
+                                        setState(() {
+                                          repairsType
+                                              .add(myData[index]['repair']);
+                                          priceControllers.add(priceEach);
+                                          allRepairForPrice.add(priceEach);
+                                        });
+                                      }
+
+                                      // var repairIs = repairsType.firstWhere(
+                                      //     (element) =>
+                                      //         element["repair"] ==
+                                      //         myData[index]['repair'],
+                                      //     orElse: () => null);
+                                      // if (repairIs != null) {
+                                      //   setState(() {
+                                      //     repairsType.removeWhere((item) =>
+                                      //         item['repair'] ==
+                                      //         myData[index]['repair']);
+                                      //     priceControllers.removeAt(index);
+                                      //     allRepairForPrice.removeAt(index);
+                                      //   });
+                                      // } else {
+                                      //   var repair = {
+                                      //     "repair": myData[index]['repair'],
+                                      //     "priceForEach": null
+                                      //   };
+                                      //   List<TextEditingController> priceEach =
+                                      //       [];
+                                      //   vehicleTypes.forEach((element) {
+                                      //     priceEach.add(TextEditingController());
+                                      //   });
+                                      //   setState(() {
+                                      //     repairsType.add(repair);
+                                      //     priceControllers.add(priceEach);
+                                      //     allRepairForPrice.add(priceEach);
+                                      //   });
+                                      // }
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(0.0),
+                                      child: Container(
                                         width: width * 0.5,
-                                        height: height * 0.3,
+                                        height: height * 0.23,
                                         color: Colors.white,
                                         child: Card(
-                                          semanticContainer: true,
                                           clipBehavior:
                                               Clip.antiAliasWithSaveLayer,
-                                          child: mediaType[index] == "image"
-                                              ? GestureDetector(
-                                                  onTap: () {
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              FullScreenFile(
-                                                                file: media[
-                                                                    index],
-                                                                isImage: true,
-                                                              )),
-                                                    );
-                                                  },
-                                                  child: Image.file(
-                                                    media[index],
-                                                    fit: BoxFit.fill,
-                                                  ),
-                                                )
-                                              : GestureDetector(
-                                                  onTap: () {},
-                                                  child: VideoPlayerFile(
-                                                    isVolume: false,
-                                                    video: media[index],
-                                                    isSmall: true,
-                                                  ),
+                                          child: Container(
+                                            width: width * 0.5,
+                                            height: height * 0.23,
+                                            color: repairsType.contains(
+                                              myData[index]['repair'],
+                                            )
+                                                ? Palette.appColor
+                                                : Colors.white,
+                                            child: Column(
+                                              children: <Widget>[
+                                                Column(
+                                                  children: <Widget>[
+                                                    Padding(
+                                                      padding: EdgeInsets.all(
+                                                        10,
+                                                      ),
+                                                      child: Center(
+                                                        child: Text(
+                                                          myData[index]
+                                                              ['repair'],
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                          style: TextStyle(
+                                                            color: repairsType
+                                                                    .contains(
+                                                              myData[index]
+                                                                  ['repair'],
+                                                            )
+                                                                ? Colors.black
+                                                                : Color
+                                                                    .fromRGBO(
+                                                                        129,
+                                                                        165,
+                                                                        168,
+                                                                        1),
+                                                            fontSize: 16,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    GestureDetector(
+                                                      onTap:
+                                                          !repairsType.contains(
+                                                        myData[index]['repair'],
+                                                      )
+                                                              ? null
+                                                              : () {
+                                                                  priceBottomSheet(
+                                                                      vehicleTypes,
+                                                                      width,
+                                                                      height,
+                                                                      index);
+                                                                },
+                                                      child: Image.asset(
+                                                          'assets/Icons/price.png',
+                                                          width: 60,
+                                                          height: 60,
+                                                          color: !repairsType
+                                                                  .contains(
+                                                            myData[index]
+                                                                ['repair'],
+                                                          )
+                                                              ? Color.fromRGBO(
+                                                                  129,
+                                                                  165,
+                                                                  168,
+                                                                  1)
+                                                              : Colors.black),
+                                                    )
+                                                  ],
                                                 ),
+                                              ],
+                                            ),
+                                          ),
                                           shape: RoundedRectangleBorder(
                                             borderRadius:
                                                 BorderRadius.circular(20.0),
@@ -1096,447 +1539,18 @@ class _GarageFormState extends State<GarageForm> {
                                           margin: EdgeInsets.all(10),
                                         ),
                                       ),
-                                      Padding(
-                                        padding:
-                                            EdgeInsets.only(left: width * 0.35),
-                                        child: FloatingActionButton(
-                                          heroTag: null,
-                                          onPressed: () {
-                                            if (mediaType[index] == "image") {
-                                              cropImageFile(media[index])
-                                                  .then((croppedImage) {
-                                                if (croppedImage != null) {
-                                                  setState(() {
-                                                    media[index] = croppedImage;
-                                                  });
-                                                }
-                                              });
-                                            } else {
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          VideoTrimmer(
-                                                            videoFile:
-                                                                media[index],
-                                                          ))).then((video) {
-                                                setState(() {
-                                                  media[index] = video;
-                                                });
-                                              });
-                                            }
-                                          },
-                                          backgroundColor: Palette.appColor,
-                                          child: Image.asset(
-                                            'assets/Icons/cut.png',
-                                            width: 30,
-                                            height: 30,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                      ),
-                                      FloatingActionButton(
-                                        heroTag: index + 3,
-                                        onPressed: () {
-                                          setState(() {
-                                            media.removeAt(index);
-                                            mediaType.removeAt(index);
-                                          });
-                                        },
-                                        backgroundColor: Palette.appColor,
-                                        child: Image.asset(
-                                          'assets/Icons/close.png',
-                                          width: 30,
-                                          height: 30,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            );
+                                    ),
+                                  );
+                                });
                           }),
                     ),
-              SizedBox(
-                height: 20,
-              ),
-              Text(
-                "Fill the details boxes",
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontSize: 17,
-                ),
-              ),
-              conatinerOfTextField(
-                  width, height, "Garage name", garageName, 1, false, false),
-              conatinerOfTextField(width, height, "Garage contact number",
-                  garagePhone, 1, false, true),
-              SizedBox(
-                height: 20,
-              ),
-              Text(
-                "Enter open and close time of the garage",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontSize: 17,
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  openAndClose(width, height, true, openController),
-                  openAndClose(width, height, false, closeController),
-                ],
-              ),
-              SizedBox(
-                height: 25,
-              ),
-              Text(
-                "Mention days of close your garage",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontSize: 17,
-                ),
-              ),
-              SizedBox(
-                  height: height * 0.1,
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      left: 10,
-                      right: 10,
-                    ),
-                    child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: daysOfAWeek.length,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap: () {
-                              if (daysOfAWeek[index] == "Monday") {
-                                if (selectedClosingDays.contains("Monday")) {
-                                  setState(() {
-                                    closingDays.remove(1);
-                                    selectedClosingDays.remove("Monday");
-                                  });
-                                } else {
-                                  setState(() {
-                                    closingDays.add(1);
-                                    selectedClosingDays.add("Monday");
-                                  });
-                                }
-                              }
-                              if (daysOfAWeek[index] == "Tuesday") {
-                                if (selectedClosingDays.contains("Tuesday")) {
-                                  setState(() {
-                                    closingDays.remove(2);
-                                    selectedClosingDays.remove("Tuesday");
-                                  });
-                                } else {
-                                  setState(() {
-                                    closingDays.add(2);
-                                    selectedClosingDays.add("Tuesday");
-                                  });
-                                }
-                              }
-                              if (daysOfAWeek[index] == "Wednesday") {
-                                if (selectedClosingDays.contains("Wednesday")) {
-                                  setState(() {
-                                    closingDays.remove(3);
-                                    selectedClosingDays.remove("Wednesday");
-                                  });
-                                } else {
-                                  setState(() {
-                                    closingDays.add(3);
-                                    selectedClosingDays.add("Wednesday");
-                                  });
-                                }
-                              }
-                              if (daysOfAWeek[index] == "Thursday") {
-                                if (selectedClosingDays.contains("Thursday")) {
-                                  setState(() {
-                                    closingDays.remove(4);
-                                    selectedClosingDays.remove("Thursday");
-                                  });
-                                } else {
-                                  setState(() {
-                                    closingDays.add(4);
-                                    selectedClosingDays.add("Thursday");
-                                  });
-                                }
-                              }
-                              if (daysOfAWeek[index] == "Friday") {
-                                if (selectedClosingDays.contains("Friday")) {
-                                  setState(() {
-                                    closingDays.remove(5);
-                                    selectedClosingDays.remove("Friday");
-                                  });
-                                } else {
-                                  setState(() {
-                                    closingDays.add(5);
-                                    selectedClosingDays.add("Friday");
-                                  });
-                                }
-                              }
-                              if (daysOfAWeek[index] == "Saturday") {
-                                if (selectedClosingDays.contains("Saturday")) {
-                                  setState(() {
-                                    closingDays.remove(6);
-                                    selectedClosingDays.remove("Saturday");
-                                  });
-                                } else {
-                                  setState(() {
-                                    closingDays.add(6);
-                                    selectedClosingDays.add("Saturday");
-                                  });
-                                }
-                              }
-                              if (daysOfAWeek[index] == "Sunday") {
-                                if (selectedClosingDays.contains("Sunday")) {
-                                  setState(() {
-                                    closingDays.remove(7);
-                                    selectedClosingDays.remove("Sunday");
-                                  });
-                                } else {
-                                  setState(() {
-                                    closingDays.add(7);
-                                    selectedClosingDays.add("Sunday");
-                                  });
-                                }
-                              }
-                            },
-                            child: Container(
-                              width: width * 0.3,
-                              height: height * 0.1,
-                              color: Colors.white,
-                              child: Card(
-                                clipBehavior: Clip.antiAliasWithSaveLayer,
-                                color: selectedClosingDays
-                                        .contains(daysOfAWeek[index])
-                                    ? Colors.red
-                                    : Colors.white,
-                                child: Center(
-                                  child: Text(daysOfAWeek[index],
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: selectedClosingDays
-                                                .contains(daysOfAWeek[index])
-                                            ? Colors.white
-                                            : Color.fromRGBO(129, 165, 168, 1),
-                                        fontSize: 17,
-                                      )),
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20.0),
-                                ),
-                                elevation: 5,
-                                margin: EdgeInsets.all(10),
-                              ),
-                            ),
-                          );
-                        }),
-                  )),
-              conatinerOfTextField(width, height, "Garage current address",
-                  garageAddress, 2, false, false),
-              conatinerOfLocation(width, height),
-              SizedBox(
-                height: 30,
-              ),
-              Text(
-                "Repairs that your garage perform,",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontSize: 17,
-                ),
-              ),
-              Text(
-                "(optional add rough cost for each)",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontSize: 15,
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              SizedBox(
-                height: height * 0.23,
-                child: Padding(
-                  padding: EdgeInsets.only(bottom: 0),
-                  child: Container(
-                    color: Colors.white,
-                    child: FutureBuilder(
-                        future: DefaultAssetBundle.of(context)
-                            .loadString('assets/json/garage_repairs.json'),
-                        builder: (context, snapshot) {
-                          if (!snapshot.hasData) {
-                            return circularProgress();
-                          }
-                          List myData = json.decode(snapshot.data);
-                          // myData.shuffle();
-
-                          return ListView.builder(
-                              itemCount: myData.length,
-                              scrollDirection: Axis.horizontal,
-                              shrinkWrap: true,
-                              itemBuilder: (context, index) {
-                                return GestureDetector(
-                                  onTap: () {
-                                    if (repairsType
-                                        .contains(myData[index]['repair'])) {
-                                      setState(() {
-                                        repairsType
-                                            .remove(myData[index]['repair']);
-                                        priceControllers.removeAt(index);
-                                        allRepairForPrice.removeAt(index);
-                                      });
-                                    } else {
-                                      List<TextEditingController> priceEach =
-                                          [];
-                                      vehicleTypes.forEach((element) {
-                                        priceEach.add(TextEditingController());
-                                      });
-                                      setState(() {
-                                        repairsType
-                                            .add(myData[index]['repair']);
-                                        priceControllers.add(priceEach);
-                                        allRepairForPrice.add(priceEach);
-                                      });
-                                    }
-
-                                    // var repairIs = repairsType.firstWhere(
-                                    //     (element) =>
-                                    //         element["repair"] ==
-                                    //         myData[index]['repair'],
-                                    //     orElse: () => null);
-                                    // if (repairIs != null) {
-                                    //   setState(() {
-                                    //     repairsType.removeWhere((item) =>
-                                    //         item['repair'] ==
-                                    //         myData[index]['repair']);
-                                    //     priceControllers.removeAt(index);
-                                    //     allRepairForPrice.removeAt(index);
-                                    //   });
-                                    // } else {
-                                    //   var repair = {
-                                    //     "repair": myData[index]['repair'],
-                                    //     "priceForEach": null
-                                    //   };
-                                    //   List<TextEditingController> priceEach =
-                                    //       [];
-                                    //   vehicleTypes.forEach((element) {
-                                    //     priceEach.add(TextEditingController());
-                                    //   });
-                                    //   setState(() {
-                                    //     repairsType.add(repair);
-                                    //     priceControllers.add(priceEach);
-                                    //     allRepairForPrice.add(priceEach);
-                                    //   });
-                                    // }
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(0.0),
-                                    child: Container(
-                                      width: width * 0.5,
-                                      height: height * 0.23,
-                                      color: Colors.white,
-                                      child: Card(
-                                        clipBehavior:
-                                            Clip.antiAliasWithSaveLayer,
-                                        child: Container(
-                                          width: width * 0.5,
-                                          height: height * 0.23,
-                                          color: repairsType.contains(
-                                            myData[index]['repair'],
-                                          )
-                                              ? Palette.appColor
-                                              : Colors.white,
-                                          child: Column(
-                                            children: <Widget>[
-                                              Column(
-                                                children: <Widget>[
-                                                  Padding(
-                                                    padding: EdgeInsets.all(
-                                                      10,
-                                                    ),
-                                                    child: Center(
-                                                      child: Text(
-                                                        myData[index]['repair'],
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        style: TextStyle(
-                                                          color: repairsType
-                                                                  .contains(
-                                                            myData[index]
-                                                                ['repair'],
-                                                          )
-                                                              ? Colors.black
-                                                              : Color.fromRGBO(
-                                                                  129,
-                                                                  165,
-                                                                  168,
-                                                                  1),
-                                                          fontSize: 16,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  GestureDetector(
-                                                    onTap:
-                                                        !repairsType.contains(
-                                                      myData[index]['repair'],
-                                                    )
-                                                            ? null
-                                                            : () {
-                                                                priceBottomSheet(
-                                                                    vehicleTypes,
-                                                                    width,
-                                                                    height,
-                                                                    index);
-                                                              },
-                                                    child: Image.asset(
-                                                        'assets/Icons/price.png',
-                                                        width: 60,
-                                                        height: 60,
-                                                        color: !repairsType
-                                                                .contains(
-                                                          myData[index]
-                                                              ['repair'],
-                                                        )
-                                                            ? Color.fromRGBO(
-                                                                129,
-                                                                165,
-                                                                168,
-                                                                1)
-                                                            : Colors.black),
-                                                  )
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(20.0),
-                                        ),
-                                        elevation: 15,
-                                        margin: EdgeInsets.all(10),
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              });
-                        }),
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 5,
-              ),
-            ],
+                SizedBox(
+                  height: 5,
+                ),
+              ],
+            ),
           ),
         ));
   }

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:garage/main/services/sub/garageComment.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 import 'package:awesome_dialog/awesome_dialog.dart';
@@ -25,7 +26,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:ui' as ui;
 import 'package:intl/intl.dart';
 import 'package:location/location.dart' as lo;
-import 'package:progressive_image/progressive_image.dart';
 import 'package:rating_bar/rating_bar.dart';
 
 class Garages extends StatefulWidget {
@@ -361,7 +361,7 @@ class _GaragesState extends State<Garages> {
                           if (snapDoc.id == garage.id) {
                             snapGarage = snapDoc;
                             likes = snapDoc.likes;
-                            comments = snapDoc.comments;
+                            comments = json.decode(snapDoc.comments);
                           }
                         });
 
@@ -962,6 +962,8 @@ class _GaragesState extends State<Garages> {
                                                     ),
                                                     leading: CircleAvatar(
                                                       radius: 20,
+                                                      backgroundColor:
+                                                          Color(0xffe0e0e0),
                                                       backgroundImage: addedUser
                                                                   .thumbnailUserPhotoUrl ==
                                                               null
@@ -1022,7 +1024,18 @@ class _GaragesState extends State<Garages> {
                                           Column(
                                             children: <Widget>[
                                               GestureDetector(
-                                                onTap: () {},
+                                                onTap: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            GarageComments(
+                                                              garage:
+                                                                  snapGarage,
+                                                              docId: docId,
+                                                            )),
+                                                  );
+                                                },
                                                 child: Image.asset(
                                                   'assets/Icons/comment.png',
                                                   width: 40,

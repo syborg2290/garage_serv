@@ -17,10 +17,9 @@
          
          
     <application
-        android:name="io.flutter.app.FlutterApplication"
+        android:name=".Application" 
         android:label="garage"
-        android:icon="@mipmap/launcher_icon">
-        
+        android:icon="@mipmap/launcher_icon"> 
         <meta-data android:name="com.google.android.geo.API_KEY"
                android:value="AIzaSyDXDNlMMK_J6ORTXValGxmg6TgQ5mkPeuo"/>
         
@@ -52,24 +51,28 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <intent-filter>
+            <action android:name="FLUTTER_NOTIFICATION_CLICK" />
+            <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
         
         <activity
-    android:name="com.yalantis.ucrop.UCropActivity"
-    android:screenOrientation="portrait"
-    android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+        android:name="com.yalantis.ucrop.UCropActivity"
+        android:screenOrientation="portrait"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
         
           <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />
-        <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
+            <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"></action>
             </intent-filter>
-        </receiver>
+            </receiver>
         
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
-        <meta-data
+        <!-- <meta-data
             android:name="flutterEmbedding"
-            android:value="2" />
+            android:value="2" /> -->
     </application>
 </manifest>

@@ -255,14 +255,14 @@ commentsToGarage(String docId, String garageId, String currentUserId,
   Garage gar = Garage.fromDocument(result.documents[0]);
   List commentsForGarage = [];
   if (gar.comments != null) {
-    commentsForGarage = gar.comments;
+    commentsForGarage = json.decode(gar.comments);
   }
 
   var aComment = {
     "userId": currentUserId,
     "comment": comment,
     "type": type,
-    "timestamp": timestamp
+    "timestamp": timestamp.toString()
   };
 
   commentsForGarage.add(aComment);
@@ -292,7 +292,7 @@ removeCommentFromActivityFeed(
   String userId,
   String addedId,
 ) async {
- QuerySnapshot snp = await activityFeedRef
+  QuerySnapshot snp = await activityFeedRef
       .document(addedId)
       .collection('feedItems')
       .getDocuments();

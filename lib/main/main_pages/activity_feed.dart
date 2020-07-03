@@ -141,9 +141,12 @@ class NotificationFeed extends StatelessWidget {
         ),
         leading: CircleAvatar(
           radius: 30,
+          backgroundColor: Colors.black.withOpacity(0.8),
           backgroundImage: feed.userImage == null
               ? AssetImage('assets/Icons/user.png')
-              : CachedNetworkImageProvider(feed.userImage),
+              : CachedNetworkImageProvider(
+                  feed.userImage,
+                ),
         ),
         subtitle: Text(
           timeago.format(feed.timestamp.toDate()),

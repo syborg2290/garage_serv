@@ -16,8 +16,6 @@ exports.onCreateActivityFeedItem = functions.firestore
 
         // get the user connected to the feed
         const userId = context.params.userId;
-        console.log("userId " + userId);
-
         const userRef = admin.firestore().doc(`user/${userId}`);
         const doc = await userRef.get();
 
@@ -34,10 +32,12 @@ exports.onCreateActivityFeedItem = functions.firestore
         function sendNotification(androidNotificationToken, activityFeedItem) {
             let body;
             let type;
+            let userIdOfActivityFeed;
+            let fromUserImage;
+            let typeId;
 
             //switch body value based off notification type
             switch (activityFeedItem.type) {
-
                 case "follow":
                     body = `${activityFeedItem.username} started following you`;
                     type = "follow";
@@ -55,14 +55,23 @@ exports.onCreateActivityFeedItem = functions.firestore
                     break;
             }
 
+            userIdOfActivityFeed = activityFeedItem.userId;
+            fromUserImage = activityFeedItem.userProfileImage;
+            typeId = activityFeedItem.typeId;
+
             //create message for push notification
             const message = {
                 notification: {
-                    body,
+                    body: body,
                 },
-
                 token: androidNotificationToken,
-                data: { recipient: userId },
+                data: {
+                    recipient: userId,
+                    typeId: typeId,
+                    userImage: fromUserImage,
+                    username: activityFeedItem.username,
+                    fromUserId: userIdOfActivityFeed,
+                },
             };
 
             //Send message with admin.messaging
