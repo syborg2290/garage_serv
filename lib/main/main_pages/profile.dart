@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:garage/initials/auth_screen.dart';
 import 'package:garage/main/main_pages/sub/edit_profile.dart';
 import 'package:garage/models/user.dart';
 import 'package:garage/services/database/userStuff.dart';
@@ -12,7 +13,8 @@ import 'package:garage/utils/shimmers/profile_shimmers.dart';
 
 class Profile extends StatefulWidget {
   final String profileId;
-  Profile({this.profileId, Key key}) : super(key: key);
+  final bool isFromAuth;
+  Profile({this.profileId, this.isFromAuth, Key key}) : super(key: key);
 
   @override
   _ProfileState createState() => _ProfileState();
@@ -49,44 +51,25 @@ class _ProfileState extends State<Profile> {
 
     SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(statusBarColor: Colors.transparent));
-    return Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          brightness: Brightness.light,
-          backgroundColor: Colors.transparent,
-          elevation: 0.0,
-          leading: currentUserId != widget.profileId
-              ? SizedBox.shrink()
-              : Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.5),
-                        border: Border.all(
-                          color: Colors.white,
-                        ),
-                        borderRadius: BorderRadius.all(Radius.circular(60))),
-                    child: IconButton(
-                        icon: Image.asset(
-                          'assets/Icons/edit.png',
-                          width: width * 0.07,
-                          height: height * 0.07,
-                          color: Colors.white,
-                        ),
-                        onPressed: currentUser == null
-                            ? null
-                            : () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => EditProfile(
-                                              user: currentUser,
-                                            )));
-                              }),
-                  ),
-                ),
-          actions: <Widget>[
-            currentUserId != widget.profileId
+    return WillPopScope(
+      onWillPop: () async {
+        if (widget.isFromAuth) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AuthScreen()),
+          );
+        } else {
+          Navigator.pop(context);
+        }
+        return false;
+      },
+      child: Scaffold(
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            brightness: Brightness.light,
+            backgroundColor: Colors.transparent,
+            elevation: 0.0,
+            leading: currentUserId != widget.profileId
                 ? SizedBox.shrink()
                 : Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -99,266 +82,301 @@ class _ProfileState extends State<Profile> {
                           borderRadius: BorderRadius.all(Radius.circular(60))),
                       child: IconButton(
                           icon: Image.asset(
-                            'assets/Icons/more.png',
+                            'assets/Icons/edit.png',
                             width: width * 0.07,
                             height: height * 0.07,
                             color: Colors.white,
                           ),
-                          onPressed: () {
-                            final act = CupertinoActionSheet(
-                              actions: <Widget>[
-                                CupertinoActionSheetAction(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      Image.asset(
-                                        'assets/Icons/logout.png',
-                                        width: width * 0.07,
-                                        height: height * 0.07,
-                                        color: Colors.black,
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'Logout',
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.bold,
+                          onPressed: currentUser == null
+                              ? null
+                              : () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => EditProfile(
+                                                user: currentUser,
+                                              )));
+                                }),
+                    ),
+                  ),
+            actions: <Widget>[
+              currentUserId != widget.profileId
+                  ? SizedBox.shrink()
+                  : Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.5),
+                            border: Border.all(
+                              color: Colors.white,
+                            ),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(60))),
+                        child: IconButton(
+                            icon: Image.asset(
+                              'assets/Icons/more.png',
+                              width: width * 0.07,
+                              height: height * 0.07,
+                              color: Colors.white,
+                            ),
+                            onPressed: () {
+                              final act = CupertinoActionSheet(
+                                actions: <Widget>[
+                                  CupertinoActionSheetAction(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        Image.asset(
+                                          'assets/Icons/logout.png',
+                                          width: width * 0.07,
+                                          height: height * 0.07,
+                                          color: Colors.black,
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Text(
+                                            'Logout',
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                  onPressed: () async {
-                                    await logoutUser();
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => Home()));
-                                  },
-                                )
-                              ],
-                            );
-                            showCupertinoModalPopup(
-                                context: context,
-                                builder: (BuildContext context) => act);
-                          }),
-                    ),
-                  )
-          ],
-        ),
-        backgroundColor: Colors.white,
-        extendBodyBehindAppBar: true,
-        body: StreamBuilder(
-            stream: streamingUser(widget.profileId),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return shimmerEffectLoadingProfile(context);
-              } else {
-                User user = User.fromDocument(snapshot.data.documents[0]);
-
-                checkIfFollowingSe(widget.profileId, currentUserId)
-                    .then((value) {
-                  if (value.exists) {
-                    isFollow = true;
-                  } else {
-                    isFollow = false;
-                  }
-                });
-
-                getFollowersSe(widget.profileId).then((value) {
-                  followers = value.documents.length;
-                });
-
-                getFollowingSe(widget.profileId).then((value) {
-                  following = value.documents.length;
-                });
-
-                return SingleChildScrollView(
-                  child: Container(
-                    padding: EdgeInsets.fromLTRB(
-                      height * 0.0001,
-                      height * 0.0001,
-                      height * 0.0001,
-                      height * 0.0001,
-                    ),
-                    child: Column(
-                      children: <Widget>[
-                        Stack(
-                          children: <Widget>[
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(35.0),
-                              child: Image.asset(
-                                'assets/designs/profile_cover.png',
-                                fit: BoxFit.cover,
-                                height: height * 0.3,
-                                width: width,
-                              ),
-                            ),
-                            Stack(
-                              children: <Widget>[
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                    top: height * 0.2,
-                                    left: width * 0.3,
-                                    right: width * 0.1,
-                                  ),
-                                  child: Container(
-                                    width: width * 0.38,
-                                    height: height * 0.2,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      border: Border.all(
-                                        color: Colors.white,
-                                        width: 10,
-                                      ),
-                                      shape: BoxShape.circle,
+                                      ],
                                     ),
-                                    child: ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(70.0),
-                                        child: user.thumbnailUserPhotoUrl ==
-                                                null
-                                            ? Image.asset(
-                                                'assets/Icons/user.png',
-                                                width: width * 0.38,
-                                                height: height * 0.2,
-                                              )
-                                            : ProgressiveImage(
-                                                placeholder: AssetImage(
-                                                    'assets/Icons/user.png'),
-                                                // size: 1.87KB
-                                                thumbnail: NetworkImage(
-                                                    user.thumbnailUserPhotoUrl),
-                                                // size: 1.29MB
-                                                image: NetworkImage(
-                                                    user.thumbnailUserPhotoUrl),
-                                                width: width * 0.38,
-                                                height: height * 0.2,
-                                                fit: BoxFit.cover,
-                                              )),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        Text(
-                          user.username,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 2,
-                        ),
-                        user.aboutYou == null
-                            ? SizedBox.shrink()
-                            : Padding(
-                                padding: EdgeInsets.only(
-                                  left: 12,
-                                  right: 12,
-                                ),
-                                child: Text(
-                                  user.aboutYou,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Color.fromRGBO(129, 165, 168, 1),
-                                  ),
+                                    onPressed: () async {
+                                      await logoutUser();
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => Home()));
+                                    },
+                                  )
+                                ],
+                              );
+                              showCupertinoModalPopup(
+                                  context: context,
+                                  builder: (BuildContext context) => act);
+                            }),
+                      ),
+                    )
+            ],
+          ),
+          backgroundColor: Colors.white,
+          extendBodyBehindAppBar: true,
+          body: StreamBuilder(
+              stream: streamingUser(widget.profileId),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return shimmerEffectLoadingProfile(context);
+                } else {
+                  User user = User.fromDocument(snapshot.data.documents[0]);
+
+                  checkIfFollowingSe(widget.profileId, currentUserId)
+                      .then((value) {
+                    if (value.exists) {
+                      isFollow = true;
+                    } else {
+                      isFollow = false;
+                    }
+                  });
+
+                  getFollowersSe(widget.profileId).then((value) {
+                    followers = value.documents.length;
+                  });
+
+                  getFollowingSe(widget.profileId).then((value) {
+                    following = value.documents.length;
+                  });
+
+                  return SingleChildScrollView(
+                    child: Container(
+                      padding: EdgeInsets.fromLTRB(
+                        height * 0.0001,
+                        height * 0.0001,
+                        height * 0.0001,
+                        height * 0.0001,
+                      ),
+                      child: Column(
+                        children: <Widget>[
+                          Stack(
+                            children: <Widget>[
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(35.0),
+                                child: Image.asset(
+                                  'assets/designs/profile_cover.png',
+                                  fit: BoxFit.cover,
+                                  height: height * 0.3,
+                                  width: width,
                                 ),
                               ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        user.location == null
-                            ? SizedBox.shrink()
-                            : Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                              Stack(
                                 children: <Widget>[
-                                  Icon(
-                                    Icons.location_on,
-                                    size: 30,
-                                    color: Color.fromRGBO(129, 165, 168, 1),
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                      top: height * 0.2,
+                                      left: width * 0.3,
+                                      right: width * 0.1,
+                                    ),
+                                    child: Container(
+                                      width: width * 0.38,
+                                      height: height * 0.2,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        border: Border.all(
+                                          color: Colors.white,
+                                          width: 10,
+                                        ),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(70.0),
+                                          child:
+                                              user.thumbnailUserPhotoUrl == null
+                                                  ? Image.asset(
+                                                      'assets/Icons/user.png',
+                                                      width: width * 0.38,
+                                                      height: height * 0.2,
+                                                    )
+                                                  : ProgressiveImage(
+                                                      placeholder: AssetImage(
+                                                          'assets/Icons/user.png'),
+                                                      // size: 1.87KB
+                                                      thumbnail: NetworkImage(user
+                                                          .thumbnailUserPhotoUrl),
+                                                      // size: 1.29MB
+                                                      image: NetworkImage(user
+                                                          .thumbnailUserPhotoUrl),
+                                                      width: width * 0.38,
+                                                      height: height * 0.2,
+                                                      fit: BoxFit.cover,
+                                                    )),
+                                    ),
                                   ),
-                                  Text(
-                                    user.location,
+                                ],
+                              ),
+                            ],
+                          ),
+                          Text(
+                            user.username,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 2,
+                          ),
+                          user.aboutYou == null
+                              ? SizedBox.shrink()
+                              : Padding(
+                                  padding: EdgeInsets.only(
+                                    left: 12,
+                                    right: 12,
+                                  ),
+                                  child: Text(
+                                    user.aboutYou,
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       fontSize: 16,
                                       color: Color.fromRGBO(129, 165, 168, 1),
                                     ),
                                   ),
-                                ],
-                              ),
-                        user.id == currentUserId
-                            ? SizedBox.shrink()
-                            : SizedBox(
-                                width: width * 0.8,
-                                child: FlatButton(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        isFollow ? "Follow" : "Unfollow",
-                                        style: TextStyle(
-                                          fontSize: 17,
-                                          color: Colors.black,
-                                        ),
+                                ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          user.location == null
+                              ? SizedBox.shrink()
+                              : Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Icon(
+                                      Icons.location_on,
+                                      size: 30,
+                                      color: Color.fromRGBO(129, 165, 168, 1),
+                                    ),
+                                    Text(
+                                      user.location,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Color.fromRGBO(129, 165, 168, 1),
                                       ),
                                     ),
-                                    onPressed: () {
-                                      if (isFollow) {
-                                        handleUnfollowUserSe(
-                                          widget.profileId,
-                                          currentUserId,
-                                        );
-                                        isFollow = false;
-                                      } else {
-                                        handleFollowUserSe(
+                                  ],
+                                ),
+                          user.id == currentUserId
+                              ? SizedBox.shrink()
+                              : SizedBox(
+                                  width: width * 0.8,
+                                  child: FlatButton(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          isFollow ? "Follow" : "Unfollow",
+                                          style: TextStyle(
+                                            fontSize: 17,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        if (isFollow) {
+                                          handleUnfollowUserSe(
                                             widget.profileId,
                                             currentUserId,
-                                            user.username,
-                                            user.thumbnailUserPhotoUrl);
-                                        isFollow = true;
-                                      }
-                                    },
-                                    color: Palette.appColor,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20.0),
-                                    )),
+                                          );
+                                          isFollow = false;
+                                        } else {
+                                          handleFollowUserSe(
+                                              widget.profileId,
+                                              currentUserId,
+                                              user.username,
+                                              user.thumbnailUserPhotoUrl);
+                                          isFollow = true;
+                                        }
+                                      },
+                                      color: Palette.appColor,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(20.0),
+                                      )),
+                                ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: <Widget>[
+                              PostFollower(
+                                number: posts,
+                                title: 'Posts',
                               ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: <Widget>[
-                            PostFollower(
-                              number: posts,
-                              title: 'Posts',
-                            ),
-                            PostFollower(
-                              number: followers,
-                              title: 'Followers',
-                            ),
-                            PostFollower(
-                              number: following,
-                              title: 'Following',
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 30,
-                        ),
-                      ],
+                              PostFollower(
+                                number: followers,
+                                title: 'Followers',
+                              ),
+                              PostFollower(
+                                number: following,
+                                title: 'Following',
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 30,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              }
-            }));
+                  );
+                }
+              })),
+    );
   }
 }
 

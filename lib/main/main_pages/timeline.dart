@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:garage/main/services/main_category.dart';
+import 'package:garage/messenger/mainScreen.dart';
 import 'package:garage/models/user.dart';
 
 class Timeline extends StatefulWidget {
@@ -39,7 +40,15 @@ class _TimelineState extends State<Timeline> {
                 width: 80,
                 height: 80,
               ),
-              onPressed: () {}),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => MainScreen(
+                            userMain: widget.currentUser,
+                          )),
+                );
+              }),
         ),
         actions: <Widget>[
           Padding(

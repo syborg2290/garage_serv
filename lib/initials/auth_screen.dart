@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import 'package:animator/animator.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,6 +15,8 @@ import 'package:garage/main/main_pages/find.dart';
 import 'package:garage/main/main_pages/profile.dart';
 import 'package:garage/main/main_pages/timeline.dart';
 import 'package:garage/main/services/sub/garageComment.dart';
+import 'package:garage/messenger/chat_models/chat_user.dart';
+import 'package:garage/messenger/resources/authentication_methods.dart';
 import 'package:garage/models/main_services/garage.dart';
 import 'package:garage/models/user.dart';
 import 'package:garage/services/database/userStuff.dart';
@@ -41,6 +44,7 @@ class _AuthScreenState extends State<AuthScreen> {
   Brightness bottomBrightness = Brightness.light;
   FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+  final AuthenticationMethods _authenticationMethods = AuthenticationMethods();
   bool isLoading = true;
   final MethodChannel platform =
       MethodChannel('crossingthestreams.io/resourceResolver');
@@ -74,9 +78,10 @@ class _AuthScreenState extends State<AuthScreen> {
 
   getCurrentUser() async {
     final SharedPreferences pref = await SharedPreferences.getInstance();
-    await configureFirebaseMessaging(pref.getString('userid'));
+
     User currentUserObj =
         User.fromDocument(await getUserObj(pref.getString('userid')));
+    await chatConfig(currentUserObj);
     setState(() {
       currentUser = currentUserObj;
       currentUserId = pref.getString('userid');
@@ -84,11 +89,13 @@ class _AuthScreenState extends State<AuthScreen> {
     });
   }
 
-  configureFirebaseMessaging(String currentUserId) async {
-    _firebaseMessaging.getToken().then((token) {
-      print("Firebase Messaging Token: $token\n");
-      createMessagingToken(token, currentUserId);
-    });
+  chatConfig(User currentMainUser) async {
+    DocumentSnapshot chatUser =
+        await _authenticationMethods.checkIsNew(currentMainUser.id);
+    if (!chatUser.exists) {
+      String deviceToken = await _firebaseMessaging.getToken();
+      await _authenticationMethods.addDataToDb(currentMainUser, deviceToken);
+    }
   }
 
   initializeLocalNotification() {
@@ -144,6 +151,7 @@ class _AuthScreenState extends State<AuthScreen> {
         MaterialPageRoute(
             builder: (context) => Profile(
                   profileId: re["data"]["typeId"],
+                  isFromAuth: true,
                 )),
       );
     }
@@ -198,69 +206,6 @@ class _AuthScreenState extends State<AuthScreen> {
       payload: json.encode(message),
     );
   }
-
-  // Future<void> _showMessagingNotification() async {
-  //   // use a platform channel to resolve an Android drawable resource to a URI.
-  //   // This is NOT part of the notifications plugin. Calls made over this channel is handled by the app
-  //   // String imageUri = await platform.invokeMethod('drawableToUri', 'food');
-  //   var messages = List<Message>();
-  //   // First two person objects will use icons that part of the Android app's drawable resources
-  //   var me = Person(
-  //     name: 'Me',
-  //     key: '1',
-  //     uri: 'tel:1234567890',
-  //     icon: DrawableResourceAndroidIcon('me'),
-  //   );
-  //   var coworker = Person(
-  //     name: 'Coworker',
-  //     key: '2',
-  //     uri: 'tel:9876543210',
-  //     icon: FlutterBitmapAssetAndroidIcon('Icons/service.png'),
-  //   );
-  //   // download the icon that would be use for the lunch bot person
-  //   var largeIconPath = await _downloadAndSaveFile(
-  //       'http://via.placeholder.com/48x48', 'largeIcon');
-  //   // this person object will use an icon that was downloaded
-  //   var lunchBot = Person(
-  //     name: 'Lunch bot',
-  //     key: 'bot',
-  //     bot: true,
-  //     icon: BitmapFilePathAndroidIcon(largeIconPath),
-  //   );
-  //   messages.add(Message('Hi', DateTime.now(), null));
-  //   messages.add(Message(
-  //       'What\'s up?', DateTime.now().add(Duration(minutes: 5)), coworker));
-  //   // messages.add(Message(
-  //   //     'Lunch?', DateTime.now().add(Duration(minutes: 10)), null,
-  //   //     dataMimeType: 'image/png', dataUri: imageUri));
-  //   messages.add(Message('What kind of food would you prefer?',
-  //       DateTime.now().add(Duration(minutes: 10)), lunchBot));
-  //   var messagingStyle = MessagingStyleInformation(me,
-  //       groupConversation: true,
-  //       conversationTitle: 'Team lunch',
-  //       htmlFormatContent: true,
-  //       htmlFormatTitle: true,
-  //       messages: messages);
-  //   var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-  //       'message channel id',
-  //       'message channel name',
-  //       'message channel description',
-  //       category: 'msg',
-  //       styleInformation: messagingStyle);
-  //   var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
-  //   var platformChannelSpecifics = NotificationDetails(
-  //       androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-  //   await flutterLocalNotificationsPlugin.show(
-  //       0, 'message title', 'message body', platformChannelSpecifics);
-
-  //   // wait 10 seconds and add another message to simulate another response
-  //   await Future.delayed(Duration(seconds: 10), () async {
-  //     messages.add(
-  //         Message('Thai', DateTime.now().add(Duration(minutes: 11)), null));
-  //     await flutterLocalNotificationsPlugin.show(
-  //         0, 'message title', 'message body', platformChannelSpecifics);
-  //   });
-  // }
 
   onPageChanged(int pageIndex) {
     setState(() {
@@ -330,6 +275,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       ),
                       Profile(
                         profileId: currentUserId,
+                        isFromAuth: true,
                       ),
                     ],
                     controller: pageController,

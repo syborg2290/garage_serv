@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:garage/initials/auth_screen.dart';
@@ -18,6 +19,7 @@ class Signup extends StatefulWidget {
 class _SignupState extends State<Signup> {
   bool secureText = true;
   bool consecureText = true;
+  FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
   TextEditingController fname = TextEditingController();
   TextEditingController lname = TextEditingController();
@@ -30,7 +32,7 @@ class _SignupState extends State<Signup> {
   @override
   void initState() {
     super.initState();
-   pr = ProgressDialog(
+    pr = ProgressDialog(
       context,
       type: ProgressDialogType.Download,
       textDirection: TextDirection.ltr,
@@ -99,6 +101,11 @@ class _SignupState extends State<Signup> {
                             await SharedPreferences.getInstance();
 
                         pref.setString('userid', result.user.uid);
+
+                        _firebaseMessaging.getToken().then((token) {
+                          print("Firebase Messaging Token: $token\n");
+                          createMessagingToken(token, result.user.uid);
+                        });
 
                         pr.hide().whenComplete(() {
                           Navigator.push(
